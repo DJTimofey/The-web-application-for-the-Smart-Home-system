@@ -1,0 +1,24 @@
+<!-- HTML-шаблон (sensorData.html) -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sensor Data</title>
+</head>
+<body>
+<h1>Sensor Data</h1>
+<table>
+    <tr>
+        <th>Location</th>
+        <th>Temperature</th>
+        <th>Humidity</th>
+        <!-- Дополнительные столбцы, если необходимо -->
+    </tr>
+    <tr th:each="data : ${sensorDataList}">
+        <td th:text="${data.location}"></td>
+        <td th:text="${data.temperature}"></td>
+        <td th:text="${data.humidity}"></td>
+        <!-- Дополнительные столбцы, если необходимо -->
+    </tr>
+</table>
+</body>
+</html>

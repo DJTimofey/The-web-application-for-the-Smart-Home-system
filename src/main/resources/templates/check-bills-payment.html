@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Check Utility Bills Payment</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://top-fon.com/uploads/posts/2023-01/1675195674_top-fon-com-p-fon-dlya-prezentatsii-biznes-minimalizm-139.jpg') center center fixed;
+            background-size: cover;
+            margin: 0;
+            color: #fff;
+        }
+
+        .container {
+            padding: 50px;
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .table {
+            color: #fff;
+        }
+
+        .table th,
+        .table td {
+            border: 1px solid #fff;
+        }
+
+        .table th {
+            background-color: #007bff;
+            text-align: center;
+            padding: 10px;
+        }
+
+        .table td {
+            padding: 10px;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 40px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="display-4 mb-4">Check Utility Bills Payment</h1>
+    <!-- Search Form -->
+    <div class="search-form">
+        <form id="searchForm" method="GET" action="/check-bills-payment">
+            <div class="mb-3">
+                <label for="username" class="form-label">Search by Username:</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Search</button>
+            <!-- Кнопка сброса -->
+            <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+        </form>
+    </div>
+    <!-- Payment Status Table -->
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>User_ID</th>
+                <th>Username</th>
+                <th>Amount</th>
+                <th>Services</th>
+                <th>Date</th>
+            </tr>
+            </thead>
+            <tbody id="payment-status-table-body">
+            <!-- Payment status data will be populated here -->
+            <tr th:each="bill : ${bills}">
+                <td th:text="${bill.userId}"></td>
+                <td th:text="${bill.username}"></td>
+                <td th:text="${bill.amount}"></td>
+                <td th:text="${bill.services}"></td>
+                <td th:text="${bill.paymentDate}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Logout Button -->
+    <form th:action="@{/logout}" method="post">
+        <button class="logout-btn" type="submit">Logout</button>
+    </form>
+</div>
+<script>
+    function resetForm() {
+        document.getElementById("username").value = ""; // Очистить поле ввода
+        document.getElementById("searchForm").submit(); // Отправить форму
+    }
+</script>
+</body>
+</html>

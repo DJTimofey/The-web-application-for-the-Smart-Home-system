@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Управление пользователями</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://top-fon.com/uploads/posts/2023-01/1675195674_top-fon-com-p-fon-dlya-prezentatsii-biznes-minimalizm-139.jpg') center center fixed;
+            background-size: cover;
+            margin: 0;
+            color: #fff;
+        }
+
+        .container {
+            padding: 50px;
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+        }
+
+        .card h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+
+        .card p {
+            color: #495057;
+            margin-bottom: 20px;
+        }
+
+        .card a {
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 6px;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+        }
+
+        .card a:hover {
+            background-color: #0056b3;
+        }
+
+        .profile-info {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .profile-info p {
+            color: #495057;
+            margin-bottom: 10px;
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 40px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            transition: background-color 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* Additional Styles */
+        .admin-info {
+            margin-top: 50px;
+        }
+
+        .admin-info h2 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .admin-info .row {
+            margin-bottom: 20px;
+        }
+
+        .admin-info .row .col-md-3 {
+            text-align: right;
+        }
+
+        .admin-info .row .col-md-9 {
+            text-align: left;
+        }
+
+        .admin-info .bi {
+            font-size: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .admin-info .row {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .admin-info .row .col-md-3, .admin-info .row .col-md-9 {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="display-4 mb-4">Управление пользователями</h1>
+    <button id="toggleTableBtn" class="btn btn-primary">Показать устройства</button>
+    <div id="userTable" class="table-container">
+        <div class="col-md-12">
+            <div class="card">
+                <h2>Список пользователей</h2>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Имя пользователя</th>
+                        <th>Почта</th>
+                        <th>Телефон</th>
+                        <th>Адрес</th>
+                        <th>Роль</th>
+                        <th>Действие</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}">
+                        <td th:text="${user.username}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.phone}"></td>
+                        <td th:text="${user.address}"></td> <!-- Отображение адреса пользователя -->
+                        <td th:text="${user.role}"></td>
+                        <td>
+                            <!-- Кнопки для действий, таких как удаление, блокировка и разблокировка -->
+                            <form th:action="@{/admin/delete-user}" method="post" style="display: inline;">
+                                <input type="hidden" name="userId" th:value="${user.id}">
+                                <button type="submit" class="btn btn-danger">Удалить</button>
+                            </form>
+                            <form th:action="@{/admin/block-user}" method="post" th:unless="${user.blocked}" style="display: inline;">
+                                <input type="hidden" name="userId" th:value="${user.id}">
+                                <button type="submit" class="btn btn-warning">Заблокировать</button>
+                            </form>
+                            <form th:action="@{/admin/unblock-user}" method="post" th:if="${user.blocked}" style="display: inline;">
+                                <input type="hidden" name="userId" th:value="${user.id}">
+                                <button type="submit" class="btn btn-success">Разблокировать</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Отображение таблицы устройств (изначально скрыто) -->
+    <div id="deviceTable" class="table-container" style="display: none;">
+        <div class="col-md-12">
+            <div class="card">
+                <h2>Список устройств</h2>
+                <table class="table">
+                    <!-- Заголовок таблицы -->
+                    <thead>
+                    <tr>
+                        <th>ID устройства</th>
+                        <th>Название устройства</th>
+                        <th>Статус</th>
+                        <th>ID пользователя</th>
+                        <th>ID комнаты</th>
+                        <th>Влажность</th>
+                        <th>Температура</th>
+                        <th>Яркость</th>
+                    </tr>
+                    </thead>
+                    <!-- Тело таблицы -->
+                    <tbody>
+                    <!-- Итерация по каждому устройству -->
+                    <tr th:each="device : ${devices}">
+                        <td th:text="${device.id}"></td>
+                        <td th:text="${device.name}"></td>
+                        <td th:text="${device.status}"></td>
+                        <td th:text="${device.user.id}"></td>
+                        <td th:text="${device.room.id}"></td>
+                        <td th:text="${device.humidity}"></td>
+                        <td th:text="${device.temperature}"></td>
+                        <td th:text="${device.brightness}"></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <button id="addUserBtn" class="btn btn-primary">Добавить пользователя</button>
+    <div id="addUserForm" style="display: none;">
+        <form th:action="@{/admin/add-user}" method="post">
+            <div class="mb-3">
+                <label for="username" class="form-label">Имя пользователя</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Почта</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Пароль</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Роль</label>
+                <select class="form-select" id="role" name="role">
+                    <option value="USER">Жилец</option>
+                    <option value="ADMIN">Администратор</option>
+                    <option value="OPERATOR">Оператор</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Телефон</label>
+                <input type="text" class="form-control" id="phone" name="phone">
+            </div>
+            <div class="mb-3">
+                <label for="address" class="form-label">Адрес</label>
+                <input type="text" class="form-control" id="address" name="address">
+            </div>
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('addUserBtn').addEventListener('click', function() {
+        var form = document.getElementById('addUserForm');
+        if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'block';
+        } else {
+            form.style.display = 'none';
+        }
+    });
+    document.getElementById('toggleTableBtn').addEventListener('click', function() {
+        var userTable = document.getElementById('userTable');
+        var deviceTable = document.getElementById('deviceTable');
+
+        if (userTable.style.display === 'none') {
+            userTable.style.display = 'block';
+            deviceTable.style.display = 'none';
+            document.getElementById('toggleTableBtn').innerText = 'Показать устройства';
+        } else {
+            userTable.style.display = 'none';
+            deviceTable.style.display = 'block';
+            document.getElementById('toggleTableBtn').innerText = 'Показать пользователей';
+        }
+    });
+</script>
+</body>
+</html>

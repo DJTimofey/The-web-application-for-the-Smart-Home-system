@@ -1,0 +1,15 @@
+.card {
+    border: 1px solid #ccc;
+    background-color: #f4f4f4;
+    padding: 20px;
+    margin-bottom: 10px;
+    
+  }
+
+.nav{
+  position: relative;
+}
+
+#btn-set-alarm{
+  margin: 100px;
+}

@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>История показания датчиков</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    /* Global styles */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f8f9fa;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    /* Table styling */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-spacing: 0;
+      background-color: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 5px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #dee2e6;
+    }
+    th:first-child, td:first-child {
+      border-left: 1px solid #dee2e6;
+    }
+    th:last-child, td:last-child {
+      border-right: 1px solid #dee2e6;
+    }
+    /* Hover effect */
+    tr {
+      transition: background-color 0.3s;
+    }
+    tr:hover {
+      background-color: #f2f2f2;
+    }
+    /* Icon styling */
+    th i, td i {
+      margin-right: 5px;
+    }
+    /* Chart container */
+    .chart-container {
+      position: relative;
+      margin-top: 20px;
+      height: 300px;
+    }
+    .highest-temp {
+      background-color: #fa0e0e; /* Light red for highest temperature */
+    }
+
+    .lowest-temp {
+      background-color: #084172; /* Light blue for lowest temperature */
+    }
+
+    .highest-humidity {
+      background-color: #c01919; /* Light red for highest humidity */
+    }
+
+    .lowest-humidity {
+      background-color: #0b3756; /* Light blue for lowest humidity */
+    }
+    /* Дополнительные стили для таблицы */
+    #sensorDataTable {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    #sensorDataTable th,
+    #sensorDataTable td {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    #sensorDataTable th {
+      background-color: #f2f2f2;
+    }
+
+    #sensorDataTable tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    #sensorDataTable tr:hover {
+      background-color: #dddddd;
+    }
+
+    #sensorDataTable td:last-child {
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<!-- Добавляем выпадающее меню для выбора таблицы -->
+<div class="form-group">
+  <label for="tableSelect">Выберите таблицу:</label>
+  <select class="form-control" id="tableSelect">
+    <option value="sensorDataTable">История данных о температуре и влажности</option>
+    <option value="waterLeakDataTable">Состояние датчика утечки воды</option>
+  </select>
+</div>
+
+<div class="container mt-5">
+  <h1>История показания датчиков</h1>
+  <div class="form-group">
+    <label for="locationFilter">Фильтровать по местоположению:</label>
+    <input type="text" class="form-control" id="locationFilter">
+  </div>
+  <div class="form-group">
+    <label for="deviceNameFilter">Фильтровать по названию устройства:</label>
+    <input type="text" class="form-control" id="deviceNameFilter">
+  </div>
+  <div class="form-group">
+    <label for="dateFilter">Фильтровать по дате (DD/MM/YYYY HH:mm:ss):</label>
+    <input type="text" class="form-control" id="dateFilter">
+  </div>
+  <div class="form-group">
+    <label for="userNameFilter">Фильтровать по имени пользователя:</label>
+    <input type="text" class="form-control" id="userNameFilter">
+  </div>
+  <div class="form-group">
+    <label for="userPhoneFilter">Фильтровать по телефону пользователя:</label>
+    <input type="text" class="form-control" id="userPhoneFilter">
+  </div>
+  <div class="form-group">
+    <label for="userAddressFilter">Фильтровать по адресу пользователя:</label>
+    <input type="text" class="form-control" id="userAddressFilter">
+  </div>
+  <table class="table table-hover" id="sensorDataTable">
+    <thead>
+    <tr>
+      <th>Местоположение <i class="fas fa-map-marker-alt"></i></th>
+      <th>Температура <i class="fas fa-thermometer-half"></i></th>
+      <th>Влажность <i class="fas fa-tint"></i></th>
+      <th>Имя устройства <i class="fas fa-mobile-alt"></i></th>
+      <th>Отметка времени</th>
+      <!-- Добавляем заголовки для информации о пользователе -->
+      <th>Имя пользователя<i class="fas fa-user"></i></th>
+      <th>Телефон пользователя <i class="fas fa-phone"></i></th>
+      <th>Адрес пользователя<i class="fas fa-address-card"></i></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="data : ${sensorDataList}" th:unless="${data.location == 'Outdoor'}">
+      <td th:text="${data.location}"></td>
+      <td th:text="${data.temperature}"></td>
+      <td th:text="${data.humidity}"></td>
+      <td th:text="${data.deviceName}"></td>
+      <td th:text="${#dates.format(data.timestamp, 'dd/MM/yyyy HH:mm:ss')}"></td>
+      <!-- Добавляем столбцы для информации о пользователе -->
+      <td th:text="${data.userName}"></td>
+      <td th:text="${data.userPhone}"></td>
+      <td th:text="${data.userAddress}"></td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<table class="table table-hover" id="waterLeakDataTable" style="display:none;">
+  <thead>
+  <tr>
+    <th>Имя устройства <i class="fas fa-mobile-alt"></i></th>
+    <th>Статус</th>
+    <th>Имя пользователя<i class="fas fa-user"></i></th>
+    <th>Телефон пользователя<i class="fas fa-phone"></i></th>
+    <th>Адрес пользователя<i class="fas fa-address-card"></i></th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="data : ${waterLeakSensorData}">
+    <td th:text="${data.name}"></td>
+    <td>
+      <span th:if="${data.status == 'On' or data.status.toString() == 'On'}">Мокрый</span>
+      <span th:if="${data.status == 'Off' or data.status.toString() == 'Off'}">Сухой</span>
+    </td>
+    <td th:text="${data.user.username}"></td>
+    <td th:text="${data.user.phone}"></td>
+    <td th:text="${data.user.address}"></td>
+  </tr>
+  </tbody>
+</table>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $('#tableSelect').change(function() {
+    var selectedTableId = $(this).val();
+    $('.table').hide();
+    $('#' + selectedTableId).show();
+  });
+  $(document).ready(function() {
+    // Initialize object to store min and max values for each device
+    var deviceData = {};
+
+    function updateDeviceData() {
+      deviceData = {};
+      // Update highest and lowest temperature and humidity for each device
+      $('#sensorDataTable tbody tr').each(function() {
+        var deviceId = $(this).find('td:nth-child(4)').text();
+        var temperature = parseFloat($(this).find('td:nth-child(2)').text());
+        var humidity = parseFloat($(this).find('td:nth-child(3)').text());
+
+        if (!deviceData[deviceId]) {
+          deviceData[deviceId] = {
+            highestTemp: temperature,
+            lowestTemp: temperature,
+            highestHumidity: humidity,
+            lowestHumidity: humidity
+          };
+        } else {
+          if (temperature > deviceData[deviceId].highestTemp) {
+            deviceData[deviceId].highestTemp = temperature;
+          }
+          if (temperature < deviceData[deviceId].lowestTemp) {
+            deviceData[deviceId].lowestTemp = temperature;
+          }
+          if (humidity > deviceData[deviceId].highestHumidity) {
+            deviceData[deviceId].highestHumidity = humidity;
+          }
+          if (humidity < deviceData[deviceId].lowestHumidity) {
+            deviceData[deviceId].lowestHumidity = humidity;
+          }
+        }
+      });
+    }
+
+    function applyStyling() {
+      // Display highest and lowest values in the table and apply styling
+      $('#sensorDataTable tbody tr').each(function() {
+        var deviceId = $(this).find('td:nth-child(4)').text();
+        var temperature = parseFloat($(this).find('td:nth-child(2)').text());
+        var humidity = parseFloat($(this).find('td:nth-child(3)').text());
+
+        $(this).find('td:nth-child(2), td:nth-child(3)').removeClass('highest-temp lowest-temp highest-humidity lowest-humidity');
+
+        if (temperature === deviceData[deviceId].highestTemp) {
+          $(this).find('td:nth-child(2)').addClass('highest-temp');
+        } else if (temperature === deviceData[deviceId].lowestTemp) {
+          $(this).find('td:nth-child(2)').addClass('lowest-temp');
+        }
+
+        if (humidity === deviceData[deviceId].highestHumidity) {
+          $(this).find('td:nth-child(3)').addClass('highest-humidity');
+        } else if (humidity === deviceData[deviceId].lowestHumidity) {
+          $(this).find('td:nth-child(3)').addClass('lowest-humidity');
+        }
+      });
+    }
+
+    // Highlight highest and lowest values on hover
+    $('#sensorDataTable tbody tr').hover(function() {
+      $(this).find('td:nth-child(2), td:nth-child(3)').removeClass('highest-temp lowest-temp highest-humidity lowest-humidity');
+    }, function() {
+      applyStyling(); // Reapply styling to maintain highlighting
+    });
+
+    // Initial setup
+    updateDeviceData();
+    applyStyling();
+
+    // Sort table data
+    $('#sortField').change(function() {
+      var field = parseInt($(this).val());
+      var rows = $('#sensorDataTable tbody tr').get();
+      rows.sort(function(a, b) {
+        var A = $(a).children('td').eq(field).text().toUpperCase();
+        var B = $(b).children('td').eq(field).text().toUpperCase();
+        if (A < B) {
+          return -1;
+        }
+        if (A > B) {
+          return 1;
+        }
+        return 0;
+      });
+      $.each(rows, function(index, row) {
+        $('#sensorDataTable tbody').append(row);
+      });
+
+      // Update device data and apply styling
+      updateDeviceData();
+      applyStyling();
+    });
+  });
+
+    $('.filter-input').on('input', function() {
+      var filterValue = $(this).val().toUpperCase();
+      $(this).closest('.container').find('.table tbody tr').each(function() {
+        var row = $(this);
+        var shouldShowRow = false;
+        row.find('td').each(function() {
+          var cellText = $(this).text().toUpperCase();
+          if (cellText.indexOf(filterValue) > -1) {
+            shouldShowRow = true;
+            return false; // Break the loop
+          }
+        });
+        shouldShowRow ? row.show() : row.hide();
+      });
+    });
+
+    // Filter table data by location
+    $('#locationFilter').on('input', function() {
+      var filterValue = $(this).val().toUpperCase();
+      $('#sensorDataTable tbody tr').each(function() {
+        var location = $(this).find('td:nth-child(1)').text().toUpperCase();
+        if (location.indexOf(filterValue) > -1) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    // Filter table data by device name
+    $('#deviceNameFilter').on('input', function() {
+      var filterValue = $(this).val().toUpperCase();
+      $('#sensorDataTable tbody tr').each(function() {
+        var deviceName = $(this).find('td:nth-child(4)').text().toUpperCase();
+        if (deviceName.indexOf(filterValue) > -1) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+    // Filter table data by date
+    $('#dateFilter').on('input', function() {
+      var filterValue = $(this).val();
+      $('#sensorDataTable tbody tr').each(function() {
+        var date = $(this).find('td:nth-child(5)').text();
+        if (date.includes(filterValue)) {
+          $(this).show();
+        } else {
+          $(this).hide();
+        }
+      });
+    });
+
+  // Filter table data by user name
+  $('#userNameFilter').on('input', function() {
+    var filterValue = $(this).val().toUpperCase();
+    $('#sensorDataTable tbody tr').each(function() {
+      var userName = $(this).find('td:nth-child(6)').text().toUpperCase();
+      if (userName.indexOf(filterValue) > -1) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+
+  // Filter table data by user phone
+  $('#userPhoneFilter').on('input', function() {
+    var filterValue = $(this).val().toUpperCase();
+    $('#sensorDataTable tbody tr').each(function() {
+      var userPhone = $(this).find('td:nth-child(7)').text().toUpperCase();
+      if (userPhone.indexOf(filterValue) > -1) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+
+  // Filter table data by user address
+  $('#userAddressFilter').on('input', function() {
+    var filterValue = $(this).val().toUpperCase();
+    $('#sensorDataTable tbody tr').each(function() {
+      var userAddress = $(this).find('td:nth-child(8)').text().toUpperCase();
+      if (userAddress.indexOf(filterValue) > -1) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+  // Filter table data by location for waterLeakDataTable
+  $('#locationFilter').on('input', function() {
+    var filterValue = $(this).val().toUpperCase();
+    $('#waterLeakDataTable tbody tr').each(function() {
+      var location = $(this).find('td:nth-child(1)').text().toUpperCase();
+      if (location.indexOf(filterValue) > -1) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+
+  // Filter table data by device name for waterLeakDataTable
+  $('#deviceNameFilter').on('input', function() {
+    var filterValue = $(this).val().toUpperCase();
+    $('#waterLeakDataTable tbody tr').each(function() {
+      var deviceName = $(this).find('td:nth-child(1)').text().toUpperCase();
+      if (deviceName.indexOf(filterValue) > -1) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+
+  // Filter table data by user name for waterLeakDataTable
+  $('#userNameFilter').on('input', function() {
+    var filterValue = $(this).val().toUpperCase();
+    $('#waterLeakDataTable tbody tr').each(function() {
+      var userName = $(this).find('td:nth-child(3)').text().toUpperCase();
+      if (userName.indexOf(filterValue) > -1) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+
+  // Filter table data by user phone for waterLeakDataTable
+  $('#userPhoneFilter').on('input', function() {
+    var filterValue = $(this).val().toUpperCase();
+    $('#waterLeakDataTable tbody tr').each(function() {
+      var userPhone = $(this).find('td:nth-child(4)').text().toUpperCase();
+      if (userPhone.indexOf(filterValue) > -1) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+
+  // Filter table data by user address for waterLeakDataTable
+  $('#userAddressFilter').on('input', function() {
+    var filterValue = $(this).val().toUpperCase();
+    $('#waterLeakDataTable tbody tr').each(function() {
+      var userAddress = $(this).find('td:nth-child(5)').text().toUpperCase();
+      if (userAddress.indexOf(filterValue) > -1) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+
+  // Filter table data by status for waterLeakDataTable
+  $('#statusFilter').on('input', function() {
+    var filterValue = $(this).val().toUpperCase();
+    $('#waterLeakDataTable tbody tr').each(function() {
+      var status = $(this).find('td:nth-child(2)').text().toUpperCase();
+      if (status.indexOf(filterValue) > -1) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  });
+</script>
+</body>
+</html>

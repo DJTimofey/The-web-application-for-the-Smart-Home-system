@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+  <title>Smart Home App</title>
+  <link rel="icon" type="image/png" href="https://w7.pngwing.com/pngs/641/1018/png-transparent-computer-icons-favicon-scalable-graphics-notes-angle-text-logo.png">
+
+  <style>
+    body {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://top-fon.com/uploads/posts/2023-01/1675195674_top-fon-com-p-fon-dlya-prezentatsii-biznes-minimalizm-139.jpg') center center fixed;
+      background-size: cover;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+      padding: 30px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #007bff;
+    }
+
+    form {
+      margin-top: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #495057;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ced4da;
+      border-radius: 6px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .registration-button {
+      margin-top: 20px;
+      background-color: #28a745;
+    }
+
+    .forgot-password-button {
+      margin-top: 20px;
+      background-color: #ffc107;
+    }
+  </style>
+</head>
+
+</html><body>
+<div class="container">
+  <h1 class="display-4">Добро пожаловать в Умный дом</h1>
+  <!-- Проверка наличия параметра blocked и вывод сообщения об ошибке -->
+  <div th:if="${param.blocked}">
+    <p class="text-danger">Ваш аккаунт заблокирован. Пожалуйста, свяжитесь с администратором</p>
+  </div>
+  <!-- Проверка наличия параметра 'error' и вывод сообщения об ошибке -->
+  <div th:if="${param.error}">
+    <p class="text-danger" style="margin-top: 10px;">Неправильный логин или пароль</p>
+  </div>
+  <form th:action="@{/login}" method="post">
+    <div class="mb-3">
+
+    </div>
+    <div class="mb-3">
+      <label for="username" class="form-label">Логин:</label>
+      <input type="text" id="username" name="username" class="form-control" placeholder="Введите свой логин" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Пароль:</label>
+      <input type="password" id="password" name="password" class="form-control" placeholder="Введите свой пароль" required>
+    </div>
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-primary btn-lg">Войти</button>
+      <a th:href="@{/forgot-password}" class="btn btn-warning btn-lg forgot-password-button">Забыл пароль?</a>
+      <a th:href="@{/registration}" class="btn btn-success btn-lg registration-button">Регистрация</a>
+    </div>
+  </form>
+</div>
+</body>

@@ -1,0 +1,1506 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home App - Devices</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://top-fon.com/uploads/posts/2023-01/1675195674_top-fon-com-p-fon-dlya-prezentatsii-biznes-minimalizm-139.jpg') center center fixed;
+            background-size: cover;
+            margin: 0;
+            color: #c01919;
+            font-size: 16px; /* Увеличение базового размера шрифта */
+        }
+
+        .container {
+            padding: 50px;
+        }
+
+        h1 {
+            color: #fff4f4;
+        }
+
+        .device-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .device-card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            width: calc(33.33% - 20px);
+        }
+
+        .device-card h3 {
+            margin-bottom: 10px;
+        }
+
+        .add-device-form input[type="text"],
+        .add-device-form select {
+            width: calc(100% - 20px);
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #382828;
+        }
+
+        .add-device-form button {
+            background-color: #007bff;
+            color: #1a1616;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .add-device-form button:hover {
+            background-color: #0056b3;
+        }
+        /* Уменьшение отступов вокруг элементов формы и кнопок */
+        .add-device-form input[type="text"],
+        .add-device-form select,
+        .add-device-form button {
+            margin-bottom: 10px; /* Уменьшение отступов между элементами формы */
+        }
+
+        /* Увеличение размеров элементов формы */
+        .add-device-form input[type="text"],
+        .add-device-form select,
+        .add-device-form button {
+            padding: 14px 24px; /* Увеличение внутренних отступов элементов формы */
+            font-size: 16px; /* Увеличение размера шрифтов в элементах формы */
+        }
+
+        .add-scene-form button {
+            background-color: #007bff;
+            color: #090808;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .add-scene-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+
+
+        .filter-options select {
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #1e1818;
+            margin-right: 10px;
+        }
+
+        .add-buttons {
+            margin-bottom: 20px;
+        }
+
+        .add-buttons button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .add-buttons button:hover {
+            background-color: #218838;
+        }
+        .scenario-buttons button {
+            margin-bottom: 20px;
+            width: 200px; /* Задает фиксированную ширину для кнопок */
+            word-wrap: break-word; /* Переносит текст на новую строку при необходимости *//* Добавляет интервал внизу каждой кнопки */
+        }
+        .modal {
+            display: none; /* По умолчанию скрываем модальное окно */
+            position: fixed; /* Фиксированное позиционирование */
+            z-index: 1; /* Размещаем поверх остальных элементов */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; /* Добавляем прокрутку, если контент больше окна */
+            background-color: rgba(0, 0, 0, 0.4); /* Цвет фона с небольшой прозрачностью */
+        }
+
+        .modal-content {
+            background-color: #fefefe; /* Белый фон контента */
+            margin: 15% auto; /* Центрируем по вертикали и горизонтали */
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 10px; /* Закругленные углы */
+            max-width: 400px; /* Максимальная ширина контента */
+        }
+
+        .close {
+            color: #aaa; /* Цвет иконки закрытия */
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .btn {
+            padding: 12px 24px; /* Увеличение внутренних отступов кнопок */
+        }
+
+        /* Стили для кнопки "Подтвердить" */
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #f9f9f9, #f9f9f9);
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: opacity 0.2s;
+            transition: opacity 0.2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #4caf50;
+            cursor: pointer;
+            -webkit-transition: background-color 0.2s;
+            transition: background-color 0.2s;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            background-color: #45a049;
+        }
+
+        /* Анимация изменения цвета фона */
+        .slider::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, #f9f9f9, #f9f9f9);
+            border-radius: 5px;
+            transition: background 0.5s;
+        }
+
+        .slider:hover::-webkit-slider-runnable-track {
+            background: linear-gradient(to right, #f9f9f9, #4caf50);
+        }
+
+        /* Анимация изменения яркости */
+        @keyframes changeBrightness {
+            0% {
+                filter: brightness(1);
+            }
+            100% {
+                filter: brightness(0);
+            }
+        }.btn {
+             padding: 10px 20px;
+             border-radius: 5px;
+             cursor: pointer;
+             transition: background-color 0.3s, color 0.3s;
+         }
+
+        /* Стили для кнопки "Применить" */
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        /* Стили для кнопки "Power" */
+        .btn-toggle {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            color: #fff;
+        }
+
+        .btn-toggle:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+        }
+
+
+        .device-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center; /* Центрирование по горизонтали */
+        }
+
+        /* Стили для карточки устройства */
+        /* Изменение ширины карточек устройств */
+        .device-card {
+            flex-basis: calc(50% - 20px); /* Уменьшение ширины карточек до 50% на мобильных устройствах */
+            max-width: 300px; /* Ограничение максимальной ширины карточек */
+        }
+        /* Для устройств с максимальной шириной 768px */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px; /* Уменьшение отступов для контейнера */
+            }
+            .device-card {
+                flex-basis: calc(50% - 20px); /* Уменьшение ширины карточек до 50% на мобильных устройствах */
+            }
+        }
+
+        /* Для устройств с максимальной шириной 576px */
+        @media (max-width: 576px) {
+            .device-card {
+                flex-basis: calc(100% - 20px); /* Уменьшение ширины карточек до 100% на узких мобильных устройствах */
+            }
+        }
+    </style>
+</head>
+<div class="container">
+    <a href="/dashboard" class="btn btn-primary">Вернуться к панели</a>
+
+    <h1>Умные устройства</h1>
+
+    <div class="search-box">
+        <form action="/devices/search" method="get" class="form-inline">
+            <div class="form-group">
+                <label for="roomId" style="font-size: 1.2em;">Выберите комнату:</label> <!-- Увеличиваем размер текста -->
+                <select id="roomId" name="roomId" class="form-control">
+                    <option value="">Все комнаты</option>
+                    <option value="1">Гостиная</option>
+                    <option value="2">Спальня</option>
+                    <option value="3">Кухня</option>
+                    <option value="4">Ванная комната</option>
+                    <option value="5">Туалет</option>
+                    <option value="6">Кабинет</option>
+                    <option value="7">Прихожая</option>
+                    <option value="8">Детская</option>
+                    <option value="9">Комната для игр</option>
+                    <option value="10">Терраса</option>
+                    <option value="11">Балкон</option>
+                    <option value="12">Подвал</option>
+                    <option value="13">Гараж</option>
+                    <option value="14">Коридор</option>
+                    <option value="15">Кладовка</option>
+                    <option value="16">Вторая спальня</option>
+                    <option value="17">Вторая гостиная</option>
+                    <option value="18">Вторая кухня</option>
+                    <option value="19">Третья спальня</option>
+                    <option value="20">Третья гостиная</option>
+                    <option value="21">Вторая ванная комната</option>
+                    <option value="22">Третья ванная комната</option>
+                    <option value="23">Второй туалет</option>
+                    <option value="24">Третий туалет</option>
+
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary ml-2">Поиск</button>
+        </form>
+    </div>
+    <!-- Кнопки для добавления новых карточек, устройств и комнат -->
+    <div class="add-buttons">
+        <!-- Кнопка для создания новой карточки устройства -->
+        <button id="addScenarioButton" class="btn btn-primary">Создать сценарий</button>
+        <button id="addDeviceButton" class="btn btn-primary" onclick="openAddDeviceModal()">Добавить устройство</button>
+        <a href="/devices/myscenarios" class="btn btn-primary">Мои сценарии</a>
+        <a href="/devices/sensor_data_history" class="btn btn-primary">История датчиков</a>
+    </div>
+
+    <!-- Модальное окно для выбора создания сценария -->
+    <div id="chooseDeviceTypeModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" id="closeChooseDeviceTypeModalButton">×</span>
+            <h2 style="text-align: center; margin-bottom: 20px;">Выберите сценарий</h2>
+            <div class="scenario-buttons" style="text-align: center;">
+                <button id="sensorTaHButton" class="btn btn-primary fixed-height-btn">Создать сценарий для датчика температуры и влажности</button>
+                <button id="waterLeakSensorButton" class="btn btn-primary fixed-height-btn">Создать сценарий для датчика протечки воды</button>
+                <button id="lightButton" class="btn btn-primary fixed-height-btn">Создать сценарий для включения или выключения света</button>
+                <button id="powerSwitchButton" class="btn btn-primary fixed-height-btn">Создать сценарий для умных розеток</button>
+                <button id="curtainScenarioButton" class="btn btn-primary fixed-height-btn">Создать сценарий для открытия или закрытия штор</button>
+                <!-- Добавьте кнопки для других типов устройств, если необходимо -->
+            </div>
+        </div>
+    </div>
+    <div id="createSensorTaHScenarioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeSensorTaHScenarioModalButton">×</span>
+            <h2>Создать новый сценарий для датчика температуры и влажности</h2>
+            <!-- Форма для ввода данных сценария -->
+            <form id="createSensorTaHScenarioForm" action="/temperatureandhumidityscenarios/add" method="post">
+                <!-- Включение CSRF токена в заголовке запроса -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="form-group">
+                    <label for="scenarioNameInput">Название сценария:</label>
+                    <input type="text" id="scenarioNameInput" name="scenarioName" class="form-control" placeholder="Введите название сценария">
+                </div>
+
+                <!-- Добавляем поля ввода для минимальной и максимальной температуры -->
+                <div class="form-group">
+                    <label for="minTemperatureInput">Минимальная температура:</label>
+                    <input type="number" id="minTemperatureInput" name="minTemperature" class="form-control" placeholder="Минимальная температура">
+                </div>
+                <div class="form-group">
+                    <label for="maxTemperatureInput">Максимальная температура:</label>
+                    <input type="number" id="maxTemperatureInput" name="maxTemperature" class="form-control" placeholder="Максимальная температура">
+                </div>
+
+                <!-- Добавляем поля ввода для минимальной и максимальной влажности -->
+                <div class="form-group">
+                    <label for="minHumidityInput">Минимальная влажность:</label>
+                    <input type="number" id="minHumidityInput" name="minHumidity" class="form-control" placeholder="Минимальная влажность">
+                </div>
+                <div class="form-group">
+                    <label for="maxHumidityInput">Максимальная влажность:</label>
+                    <input type="number" id="maxHumidityInput" name="maxHumidity" class="form-control" placeholder="Максимальная влажность">
+                </div>
+
+                <!-- Добавляем чекбоксы для выбора устройств -->
+                <div class="form-group">
+                    <label>Выберите устройства:</label>
+                    <div id="sensorTaHDevicesContainer" class="checkbox-container">
+                        <!-- Чекбоксы для выбора устройств будут добавлены динамически -->
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Создать</button>
+            </form>
+        </div>
+    </div>
+    <!-- Модальное окно для создания сценария для датчика протечки воды -->
+    <div id="createWaterLeakScenarioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeWaterLeakScenarioModalButton">×</span>
+            <h2>Создать новый сценарий для датчика протечки воды</h2>
+            <!-- Форма для ввода данных сценария -->
+            <form id="createWaterLeakScenarioForm" action="/waterleakscenarios/add" method="post">
+                <!-- Включение CSRF токена в заголовке запроса -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <!-- Остальные поля формы -->
+                <div class="form-group">
+                    <label for="waterLeakScenarioNameInput">Название сценария:</label>
+                    <input type="text" id="waterLeakScenarioNameInput" name="scenarioName" class="form-control" placeholder="Введите название сценария">
+                </div>
+
+                <!-- Добавляем поля ввода для настройки сценария для датчика протечки воды -->
+                <div class="form-group">
+                    <label for="waterLeakDetectionInput">Датчик протечки воды:</label>
+                    <select id="waterLeakDetectionInput" name="waterLeakDetection" class="form-control">
+                        <option value="yes">Датчик обнаружения протечки воды</option>
+                    </select>
+                </div>
+
+                <!-- Добавляем чекбоксы для выбора устройств -->
+                <div class="form-group">
+                    <label>Выберите устройства:</label>
+                    <div id="waterLeakDevicesContainer" class="checkbox-container">
+                        <!-- Чекбоксы для выбора устройств будут добавлены динамически -->
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Создать</button>
+            </form>
+        </div>
+    </div>
+    <!-- Модальное окно для создания сценария включения/выключения света -->
+    <div id="createLightScenarioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeLightScenarioModalButton">&times;</span>
+            <h2>Создать новый сценарий включения/выключения света</h2>
+            <!-- Форма для ввода данных сценария -->
+            <form id="createLightScenarioForm" action="/light_scenarios/add" method="post">
+                <!-- Включение CSRF токена в заголовке запроса -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <!-- Поля для ввода данных сценария -->
+                <div class="form-group">
+                    <label for="lightScenarioNameInput">Название сценария:</label>
+                    <input type="text" id="lightScenarioNameInput" name="scenarioName" class="form-control" placeholder="Введите название сценария">
+                </div>
+                <div class="form-group">
+                    <label for="lightSwitchInput">Выберите действие:</label>
+                    <select id="lightSwitchInput" name="lightSwitch" class="form-control">
+                        <option value="On">Включить свет</option>
+                        <option value="Off">Выключить свет</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="lightTimeInput">Выберите время:</label>
+                    <input type="time" id="lightTimeInput" name="lightTime" class="form-control" required>
+                    <!-- Добавили атрибут required, чтобы сделать поле обязательным для заполнения -->
+                </div>
+                <div class="form-group">
+                    <label for="lightBrightnessInput">Уровень освещенности (0-100):</label>
+                    <input type="number" id="lightBrightnessInput" name="lightBrightness" class="form-control" min="0" max="100">
+                </div>
+                <!-- Добавляем чекбоксы для выбора устройств типа "light" -->
+                <div class="form-group">
+                    <label>Выберите устройства light:</label>
+                    <div id="lightDevicesContainer" class="checkbox-container">
+                        <!-- Чекбоксы для выбора устройств будут добавлены динамически -->
+                    </div>
+                </div>
+                <!-- Добавьте другие поля, если необходимо -->
+                <button type="submit" class="btn btn-primary">Создать</button>
+            </form>
+        </div>
+    </div>
+    <!-- Модальное окно для создания сценария включения/выключения умных розеток -->
+    <div id="createPowerSwitchScenarioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closePowerSwitchScenarioModalButton">×</span>
+            <h2>Создать сценарий для умных розеток</h2>
+            <!-- Форма для ввода данных сценария -->
+            <form id="createPowerSwitchScenarioForm" action="/power_switch_scenarios/add" method="post">
+                <!-- Включение CSRF токена в заголовке запроса -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <!-- Поля для ввода данных сценария -->
+                <div class="form-group">
+                    <label for="powerSwitchScenarioNameInput">Название сценария:</label>
+                    <input type="text" id="powerSwitchScenarioNameInput" name="scenarioName" class="form-control" placeholder="Введите название сценария">
+                </div>
+                <div class="form-group">
+                    <label for="powerSwitchActionInput">Выберите действие:</label>
+                    <select id="powerSwitchActionInput" name="action" class="form-control">
+                        <option value="On">Включить</option>
+                        <option value="Off">Выключить</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="powerSwitchTimeInput">Выберите время:</label>
+                    <input type="time" id="powerSwitchTimeInput" name="time" class="form-control" required="">
+                    <!-- Добавили атрибут required, чтобы сделать поле обязательным для заполнения -->
+                </div>
+                <!-- Добавляем чекбоксы для выбора устройств типа "power switch" -->
+                <div class="form-group">
+                    <label>Выберите устройства:</label>
+                    <div id="powerSwitchDevicesContainer" class="checkbox-container">
+                        <!-- Чекбоксы для выбора устройств будут добавлены динамически -->
+                    </div>
+                </div>
+                <!-- Добавьте другие поля, если необходимо -->
+                <button type="submit" class="btn btn-primary">Создать</button>
+            </form>
+        </div>
+    </div>
+    <!-- Модальное окно для создания сценария открытия и закрытия штор -->
+    <div id="createCurtainScenarioModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeCurtainScenarioModalButton">×</span>
+            <h2>Создать сценарий для управления шторами</h2>
+            <!-- Форма для ввода данных сценария -->
+            <form id="createCurtainScenarioForm" action="/curtain_scenarios/add" method="post">
+                <!-- Включение CSRF токена в заголовке запроса -->
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <!-- Поля для ввода данных сценария -->
+                <div class="form-group">
+                    <label for="curtainScenarioNameInput">Название сценария:</label>
+                    <input type="text" id="curtainScenarioNameInput" name="scenarioName" class="form-control" placeholder="Введите название сценария">
+                </div>
+                <div class="form-group">
+                    <label for="curtainOpenTimeInput">Время открытия:</label>
+                    <input type="time" id="curtainOpenTimeInput" name="openTime" class="form-control" required="">
+                </div>
+                <div class="form-group">
+                    <label for="curtainCloseTimeInput">Время закрытия:</label>
+                    <input type="time" id="curtainCloseTimeInput" name="closeTime" class="form-control" required="">
+                </div>
+                <!-- Добавляем чекбоксы для выбора устройств штор -->
+                <div class="form-group">
+                    <label>Выберите устройства:</label>
+                    <div id="curtainDevicesContainer" class="checkbox-container">
+                        <!-- Чекбоксы для выбора устройств будут добавлены динамически -->
+                    </div>
+                </div>
+                <!-- Добавьте другие поля, если необходимо -->
+                <button type="submit" class="btn btn-primary">Создать</button>
+            </form>
+        </div>
+    </div>
+    <!-- Панель с карточками устройств -->
+    <div class="device-cards">
+        <!-- Используем Thymeleaf для вывода карточек устройств -->
+        <div class="device-card" th:each="device : ${devices}">
+            <h3 th:text="${device.name}">Название устройства</h3>
+
+            <p th:text="'Комната: ' + ${device.room.name}">Комната: </p>
+            <p th:text="'Статус: ' + ${device.status}">Статус: </p>
+
+            <!-- Проверяем, является ли устройство типом sensorTaH -->
+            <div th:if="${device.type == 'sensorTaH'}">
+                <!-- Проверяем, равны ли значения температуры и влажности null -->
+                <div th:if="${device.temperature == null and device.humidity == null}">
+                    <p>Устройство выключено</p>
+                </div>
+                <div th:unless="${device.temperature == null and device.humidity == null}">
+                    <p th:text="'Температура: ' + ${device.temperature} + '°C'">Температура: </p>
+                    <p th:text="'Влажность: ' + ${device.humidity} + '% '">Влажность: </p>
+                </div>
+            </div>
+
+            <!-- Если устройство не sensorTaH, показываем кнопку Power -->
+            <div th:unless="${device.type == 'sensorTaH'}">
+                <form th:action="@{/devices/{id}/toggle(id=${device.id})}" method="post">
+                    <!-- Включение CSRF токена в заголовке запроса -->
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <!-- Добавляем случайный параметр к URL для обновления содержимого -->
+                    <input type="hidden" name="rand" th:value="${T(java.util.UUID).randomUUID().toString()}" />
+                    <!-- Динамическое изменение текста кнопки и ее стиля -->
+                    <button type="submit" class="btn btn-toggle btn-secondary" onclick="toggleDevice('${device.id}', '${device.status}', this)">
+                        Power
+                    </button>
+                </form>
+            </div>
+
+            <!-- Форма для удаления устройства -->
+            <form th:action="@{/devices/{id}/delete(id=${device.id})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- Модальное окно добавления устройства -->
+<div id="addDeviceModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeAddDeviceModal()">×</span>
+        <h2>Добавить новое умное устройство</h2>
+        <!-- Форма для добавления устройства -->
+        <form id="addDeviceForm" action="/devices/add" method="post">
+            <!-- Включение CSRF токена в заголовке запроса -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <!-- Остальные поля формы -->
+            <label for="deviceNameInput">Название устройства:</label>
+            <input type="text" id="deviceNameInput" name="name" class="form-control" placeholder="Введите название устройства">
+            <label for="deviceTypeSelect">Тип устройства:</label>
+            <select id="deviceTypeSelect" name="type" class="form-select">
+                <option value="light">Освещение</option>
+                <option value="sensorTaH">Датчик температуры и влажности </option>
+                <option value="power switch">Переключатель питания </option>
+                <option value="household electronics">Бытовая техника </option>
+                <option value="entertainment">Развлечение </option>
+                <option value="air purification">Очистка воздуха </option>
+                <option value="air condition">Кондиционер </option>
+                <option value="heater">Обогреватель </option>
+                <option value="water leak sensor">Датчик протечки воды </option>
+                <option value="curtains">Шторы </option>
+
+                <!-- Добавьте другие типы устройств -->
+            </select>
+            <label for="roomSelect">Комната:</label>
+            <select id="roomSelect" name="roomId" class="form-select">
+                <option selected="" disabled="">Выберите комнату</option>
+                <option value="1">Гостиная</option>
+                <option value="2">Спальня</option>
+                <option value="3">Кухня</option>
+                <option value="4">Ванная комната</option>
+                <option value="5">Туалет</option>
+                <option value="6">Кабинет</option>
+                <option value="7">Прихожая</option>
+                <option value="8">Детская</option>
+                <option value="9">Комната для игр</option>
+                <option value="10">Терраса</option>
+                <option value="11">Балкон</option>
+                <option value="12">Подвал</option>
+                <option value="13">Гараж</option>
+                <option value="14">Коридор</option>
+                <option value="15">Кладовка</option>
+                <option value="16">Вторая спальня</option>
+                <option value="17">Вторая гостиная</option>
+                <option value="18">Вторая кухня</option>
+                <option value="19">Третья спальня</option>
+                <option value="20">Третья гостиная</option>
+                <option value="21">Вторая ванная комната</option>
+                <option value="22">Третья ванная комната</option>
+                <option value="23">Второй туалет</option>
+                <option value="24">Третий туалет</option>
+            </select>
+            <button type="button" class="btn btn-primary" onclick="startDeviceSearch()">Добавить</button>
+
+        </form>
+    </div>
+</div>
+<!-- Модальное окно ввода серийного номера -->
+<div id="serialNumberModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSerialNumberModal()">×</span>
+        <h2>Введите серийный номер</h2>
+        <input type="text" id="serialNumberInput" class="form-control" placeholder="Введите серийный номер">
+        <button type="button" class="btn btn-primary" onclick="checkSerialNumberAndAddDevice()">Подтвердить</button>
+    </div>
+</div>
+
+<script>
+    // Функция для открытия модального окна добавления устройства
+    function openAddDeviceModal() {
+        document.getElementById('addDeviceModal').style.display = 'block';
+    }
+
+    // Функция для закрытия модального окна добавления устройства
+    function closeAddDeviceModal() {
+        document.getElementById('addDeviceModal').style.display = 'none';
+    }
+    function toggleDevice(deviceId, currentStatus, button) {
+        // Определяем новый статус устройства
+        const newStatus = currentStatus === 'On' ? 'Off' : 'On';
+
+        // Отправляем запрос на сервер для изменения статуса устройства
+        fetch('/devices/' + deviceId + '/toggle', {
+            method: 'POST'
+        }).then(response => {
+            if (response.ok) {
+                // Обновляем текст и цвет кнопки после успешного изменения статуса устройства
+                const buttonText = newStatus === 'On' ? 'Выключить' : 'Включить';
+                const buttonClass = newStatus === 'On' ? 'btn-danger' : 'btn-success';
+                button.textContent = buttonText;
+                button.classList.remove('btn-danger', 'btn-success');
+                button.classList.add(buttonClass);
+            } else {
+                console.error('Ошибка при переключении устройства');
+            }
+        }).catch(error => {
+            console.error('Произошла ошибка:', error);
+        });
+
+        // Возвращаем false, чтобы предотвратить отправку формы по умолчанию
+        return false;
+    }
+    function searchRooms() {
+        // Получаем значение из поля ввода
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+
+        // Получаем все карточки устройств
+        const deviceCards = document.querySelectorAll('.device-card');
+
+        // Проходим по каждой карточке устройства
+        deviceCards.forEach(card => {
+            // Получаем название комнаты из карточки
+            const roomName = card.querySelector('p:nth-of-type(3)').textContent.toLowerCase();
+
+            // Проверяем, содержит ли название комнаты искомый текст
+            if (roomName.includes(searchText)) {
+                // Если содержит, показываем карточку
+                card.style.display = 'block';
+            } else {
+                // Если не содержит, скрываем карточку
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function startDeviceSearch() {
+        openSerialNumberModal();
+    }
+
+    function openSerialNumberModal() {
+        document.getElementById("serialNumberModal").style.display = "block";
+    }
+
+    function closeSerialNumberModal() {
+        document.getElementById("serialNumberModal").style.display = "none";
+    }
+
+    function playNotificationSound() {
+        var audio = new Audio('notification_sound.mp3'); // Замените 'notification_sound.mp3' на путь к вашему аудиофайлу
+        audio.play();
+    }
+
+    function checkSerialNumberAndAddDevice() {
+        var type = document.getElementById("deviceTypeSelect").value; // Получаем выбранный тип устройства
+        var serialNumber = document.getElementById("serialNumberInput").value; // Получаем введенный серийный номер
+
+        var expectedSerialNumbers = {
+            "curtains": {
+                "CU4J2N7": true,
+                "CU4J2N8": true,
+                "CU4J2N9": true,
+                "CU4J2M5": true,
+                "CU4J2P1": true
+            },
+            "sensorTaH": {
+                "S5E2N1S": true,
+                "S5E2N1T": true,
+                "S5E2N1U": true,
+                "S5E2N1V": true,
+                "S5E2N1W": true
+            },
+            "power switch": {
+                "P8O2W5E": true,
+                "P8O2W5F": true,
+                "P8O2W5G": true,
+                "P8O2W5H": true,
+                "P8O2W5I": true
+            },
+            "air purification": {
+                "A6I5R8P": true,
+                "A6I5R8Q": true,
+                "A6I5R8R": true,
+                "A6I5R8S": true,
+                "A6I5R8T": true
+            },
+            "air condition": {
+                "C4K4M3L": true,
+                "C4K4M3M": true,
+                "C4K4M3N": true,
+                "C4K4M3O": true,
+                "C4K4M3P": true
+            },
+            "heater": {
+                "H6M2K1": true,
+                "H6M2K2": true,
+                "H6M2K3": true,
+                "H6M2K4": true,
+                "H6M2K5": true
+            },
+            "water leak sensor": {
+                "WM3N4K2": true,
+                "WM3N4K3": true,
+                "WM3N4K4": true,
+                "WM3N4K5": true,
+                "WM3N4K6": true
+            },
+            "light": {
+                "L1G2H7T": true,
+                "L1G2H7U": true,
+                "L1G2H7V": true,
+                "L1G2H7W": true,
+                "L1G2H7X": true
+            }
+        };
+
+        // Проверяем, есть ли выбранный тип устройства среди ожидаемых
+        if (expectedSerialNumbers.hasOwnProperty(type)) {
+            // Если выбранный тип устройства найден в ожидаемых, продолжаем проверку серийного номера
+            if (expectedSerialNumbers[type].hasOwnProperty(serialNumber)) {
+                alert("Устройство подключено!");
+                playNotificationSound(); // Воспроизведение звука уведомления
+                document.getElementById("addDeviceForm").submit(); // Отправляем форму для добавления устройства
+            } else {
+                alert("Введенный серийный номер неверный.");
+                closeSerialNumberModal(); // Закрываем модальное окно ввода серийного номера
+            }
+        } else {
+            alert("Выбран недопустимый тип устройства.");
+            closeSerialNumberModal(); // Закрываем модальное окно ввода серийного номера
+        }
+    }
+
+
+    // Функция для открытия модального окна создания сценария для устройства типа "sensorTaH"
+    function openSensorTaHScenarioModal() {
+        document.getElementById('createSensorTaHScenarioModal').style.display = 'block';
+    }
+
+
+
+    // Добавьте обработчики событий для других типов устройств аналогично...
+
+    // Добавляем обработчик события для кнопки создания сценария
+    document.getElementById('addScenarioButton').addEventListener('click', function() {
+        // Определение типа устройства и открытие соответствующего модального окна
+        var deviceType = document.getElementById('deviceTypeSelect').value;
+        switch(deviceType) {
+            case 'sensorTaH':
+                openSensorTaHScenarioModal();
+                break;
+
+            // Добавьте обработку других типов устройств аналогично...
+            default:
+                console.error('Unknown device type');
+        }
+    });
+    // Получаем кнопки и модальные окна
+    var addScenarioButton = document.getElementById("addScenarioButton");
+    var chooseDeviceTypeModal = document.getElementById("chooseDeviceTypeModal");
+    var sensorTaHButton = document.getElementById("sensorTaHButton");
+    var createSensorTaHScenarioModal = document.getElementById("createSensorTaHScenarioModal");
+
+    // Обработчик события для кнопки создания сценария
+    addScenarioButton.onclick = function() {
+        chooseDeviceTypeModal.style.display = "block";
+    }
+
+
+    // Закрытие модальных окон при клике на крестик
+    var closeButtons = document.getElementsByClassName("close");
+    for (var i = 0; i < closeButtons.length; i++) {
+        closeButtons[i].onclick = function() {
+            var modal = this.parentElement.parentElement;
+            modal.style.display = "none";
+        }
+    }
+    function displaySensorTaHDevices(devices) {
+        const container = document.getElementById('sensorTaHDevicesContainer');
+        container.innerHTML = '';
+
+        devices.forEach(device => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'selectedDevices';
+            checkbox.value = device.id;
+            checkbox.id = 'device_' + device.id;
+
+            const label = document.createElement('label');
+            label.htmlFor = 'device_' + device.id;
+            label.textContent = device.name;
+
+            // Добавляем скрытое поле для типа устройства с уникальным именем
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'deviceType_' + device.id; // Уникальное имя поля
+            typeInput.value = device.type;
+
+            // Добавляем скрытое поле для имени устройства с уникальным именем
+            const nameInput = document.createElement('input');
+            nameInput.type = 'hidden';
+            nameInput.name = 'deviceName_' + device.id; // Уникальное имя поля
+            nameInput.value = device.name;
+
+            container.appendChild(checkbox);
+            container.appendChild(label);
+            container.appendChild(typeInput); // Добавляем скрытое поле для типа устройства
+            container.appendChild(nameInput); // Добавляем скрытое поле для имени устройства
+            container.appendChild(document.createElement('br'));
+        });
+    }
+    // Обработчик события для кнопки выбора датчика температуры и влажности
+    sensorTaHButton.onclick = function() {
+        chooseDeviceTypeModal.style.display = "none";
+        createSensorTaHScenarioModal.style.display = "block";
+
+        // Запрос на сервер для получения устройств типа sensorTaH
+        fetch('/devices/sensorTaH')
+            .then(response => response.json())
+            .then(data => {
+                // Отображаем устройства в виде чекбоксов
+                displaySensorTaHDevices(data);
+            })
+            .catch(error => {
+                console.error('Ошибка при получении устройств:', error);
+                // Выводим сообщение об ошибке, если не удалось получить устройства
+                alert('Произошла ошибка при загрузке устройств');
+            });
+    };
+
+    document.getElementById('createSensorTaHScenarioForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+        // Получаем выбранные устройства
+        const selectedDevices = Array.from(document.querySelectorAll('input[name="selectedDevices"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        // Отправляем запрос на сервер для каждого выбранного устройства
+        for (const deviceId of selectedDevices) {
+            try {
+                // Создаем новый экземпляр FormData для каждого устройства
+                const formDataCopy = new FormData(this);
+
+                // Выполняем запрос к серверу для получения данных о типе и имени устройства
+                const response = await fetch(`/devices/${deviceId}`);
+                const deviceData = await response.json();
+
+                // Очищаем предыдущие данные о типе и имени устройства
+                formDataCopy.delete('deviceType');
+                formDataCopy.delete('deviceName');
+
+                // Добавляем данные о типе и имени устройства к копии данных формы
+                formDataCopy.append('deviceType', deviceData.device_type);
+                formDataCopy.append('deviceName', deviceData.device_name);
+
+                // Очищаем поле selectedDevice
+                formDataCopy.delete('selectedDevice');
+
+                // Добавляем ID выбранного устройства к копии данных формы
+                formDataCopy.append('selectedDevice', deviceId);
+
+                // Отправляем запрос на сервер для обработки сценария и сохранения его
+                const scenarioResponse = await fetch('/temperatureandhumidityscenarios/add', {
+                    method: 'POST',
+                    body: formDataCopy
+                });
+
+                if (scenarioResponse.ok) {
+                    // Если запрос успешен, показываем сообщение об успешном сохранении
+                    alert('Сценарий успешно сохранен');
+                    // Очищаем форму
+                    this.reset();
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении сценария');
+            }
+        }
+    });
+    // Функция для открытия модального окна создания сценария для устройства типа "датчик протечки воды"
+    function openWaterLeakScenarioModal() {
+        document.getElementById('createWaterLeakScenarioModal').style.display = 'block';
+    }
+
+    // Получаем кнопку для открытия модального окна создания сценария для устройства типа "датчик протечки воды"
+    var waterLeakSensorButton = document.getElementById("waterLeakSensorButton");
+
+    // Обработчик события для кнопки выбора датчика протечки воды
+    waterLeakSensorButton.onclick = function() {
+        chooseDeviceTypeModal.style.display = "none";
+        openWaterLeakScenarioModal();
+
+        // Запрос на сервер для получения устройств типа "датчик протечки воды"
+        fetch('/devices/water leak sensor')
+            .then(response => response.json())
+            .then(data => {
+                // Отображаем устройства в виде чекбоксов
+                displayWaterLeakDevices(data);
+            })
+            .catch(error => {
+                console.error('Ошибка при получении устройств:', error);
+                // Выводим сообщение об ошибке, если не удалось получить устройства
+                alert('Произошла ошибка при загрузке устройств');
+            });
+    };
+
+    function displayWaterLeakDevices(devices) {
+        const container = document.getElementById('waterLeakDevicesContainer');
+        container.innerHTML = '';
+
+        devices.forEach(device => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'selectedDevices';
+            checkbox.value = device.id;
+            checkbox.id = 'device_' + device.id;
+
+            const label = document.createElement('label');
+            label.htmlFor = 'device_' + device.id;
+            label.textContent = device.name;
+
+            // Добавляем скрытое поле для типа устройства с уникальным именем
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'deviceType_' + device.id; // Уникальное имя поля
+            typeInput.value = device.type;
+
+            // Добавляем скрытое поле для имени устройства с уникальным именем
+            const nameInput = document.createElement('input');
+            nameInput.type = 'hidden';
+            nameInput.name = 'deviceName_' + device.id; // Уникальное имя поля
+            nameInput.value = device.name;
+
+            container.appendChild(checkbox);
+            container.appendChild(label);
+            container.appendChild(typeInput); // Добавляем скрытое поле для типа устройства
+            container.appendChild(nameInput); // Добавляем скрытое поле для имени устройства
+            container.appendChild(document.createElement('br'));
+        });
+    }
+    document.getElementById('createWaterLeakScenarioForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+        // Получаем выбранные устройства
+        const selectedDevices = Array.from(document.querySelectorAll('input[name="selectedDevices"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        // Отправляем запрос на сервер для каждого выбранного устройства
+        for (const deviceId of selectedDevices) {
+            try {
+                // Создаем новый экземпляр FormData для каждого устройства
+                const formDataCopy = new FormData(this);
+
+                // Выполняем запрос к серверу для получения данных о типе и имени устройства
+                const response = await fetch(`/devices/${deviceId}`);
+                const deviceData = await response.json();
+
+                // Очищаем предыдущие данные о типе и имени устройства
+                formDataCopy.delete('deviceType');
+                formDataCopy.delete('deviceName');
+
+                // Добавляем данные о типе и имени устройства к копии данных формы
+                formDataCopy.append('deviceType', deviceData.device_type);
+                formDataCopy.append('deviceName', deviceData.device_name);
+
+                // Очищаем поле selectedDevice
+                formDataCopy.delete('selectedDevice');
+
+                // Добавляем ID выбранного устройства к копии данных формы
+                formDataCopy.append('selectedDevice', deviceId);
+
+                // Отправляем запрос на сервер для обработки сценария и сохранения его
+                const scenarioResponse = await fetch('/water_leak_scenarios/add', {
+                    method: 'POST',
+                    body: formDataCopy
+                });
+
+                if (scenarioResponse.ok) {
+                    // Если запрос успешен, показываем сообщение об успешном сохранении
+                    alert('Сценарий успешно сохранен');
+                    // Очищаем форму
+                    this.reset();
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении сценария');
+            }
+        }
+    });
+    // Функция для обновления уровня освещенности
+    function updateBrightness(form, value) {
+        form.querySelector(".brightness-value").textContent = 'Уровень освещенности: ' + value + '%';
+        form.querySelector("input[name='brightness']").value = value;
+    }
+
+
+    // Обработчик события input для ползунка
+    document.querySelectorAll(".slider").forEach(function(slider) {
+        slider.addEventListener("input", function() {
+            var form = this.closest(".brightness-form");
+            updateBrightness(form, this.value); // Обновляем отображаемое значение
+
+            // Создаем объект FormData для сбора данных формы
+            var formData = new FormData(form);
+
+            // Отправляем POST запрос на сервер с помощью Fetch API
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Success:', data);
+                    // Можно добавить обработку успешного ответа от сервера, если необходимо
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Можно добавить обработку ошибки, если необходимо
+                });
+        });
+    });
+
+    // Получаем кнопку "Свет"
+    var lightButton = document.getElementById('lightButton');
+
+    // Получаем модальное окно
+    var createLightScenarioModal = document.getElementById('createLightScenarioModal');
+
+    // Получаем элемент для закрытия модального окна
+    var closeLightScenarioModalButton = document.getElementById('closeLightScenarioModalButton');
+
+    // Когда пользователь нажимает на кнопку "Свет", открываем модальное окно и отправляем запрос на сервер для получения устройств типа "light"
+    lightButton.onclick = function() {
+        chooseDeviceTypeModal.style.display = "none";
+        openLightScenarioModal();
+
+        // Запрос на сервер для получения устройств типа "light"
+        fetch('/devices/light')
+            .then(response => response.json())
+            .then(data => {
+                // Отображаем устройства в виде чекбоксов
+                displayLightDevices(data);
+            })
+            .catch(error => {
+                console.error('Ошибка при получении устройств:', error);
+                // Выводим сообщение об ошибке, если не удалось получить устройства
+                alert('Произошла ошибка при загрузке устройств');
+            });
+    };
+
+    // Когда пользователь нажимает на кнопку "Закрыть", закрываем модальное окно
+    closeLightScenarioModalButton.onclick = function() {
+        createLightScenarioModal.style.display = "none";
+    }
+
+    // Когда пользователь нажимает вне модального окна, закрываем его
+    window.onclick = function(event) {
+        if (event.target === createLightScenarioModal) {
+            createLightScenarioModal.style.display = "none";
+        }
+    }
+
+
+
+    function displayLightDevices(devices) {
+        const container = document.getElementById('lightDevicesContainer');
+        container.innerHTML = '';
+
+        devices.forEach(device => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'selectedDevices';
+            checkbox.value = device.id;
+            checkbox.id = 'device_' + device.id;
+
+            const label = document.createElement('label');
+            label.htmlFor = 'device_' + device.id;
+            label.textContent = device.name;
+
+            // Добавляем скрытое поле для типа устройства с уникальным именем
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'deviceType_' + device.id; // Уникальное имя поля
+            typeInput.value = device.type;
+
+            // Добавляем скрытое поле для имени устройства с уникальным именем
+            const nameInput = document.createElement('input');
+            nameInput.type = 'hidden';
+            nameInput.name = 'deviceName_' + device.id; // Уникальное имя поля
+            nameInput.value = device.name;
+
+            container.appendChild(checkbox);
+            container.appendChild(label);
+            container.appendChild(typeInput); // Добавляем скрытое поле для типа устройства
+            container.appendChild(nameInput); // Добавляем скрытое поле для имени устройства
+            container.appendChild(document.createElement('br'));
+        });
+    }
+
+    // Функция для открытия модального окна создания сценария для устройства типа "управление светом"
+    function openLightScenarioModal() {
+        document.getElementById('createLightScenarioModal').style.display = 'block';
+    }
+
+    // Получаем кнопку для открытия модального окна создания сценария для управления светом
+    var lightControlButton = document.getElementById("lightControlButton");
+
+    // Обработчик события для кнопки выбора управления светом
+    lightControlButton.onclick = function() {
+        chooseDeviceTypeModal.style.display = "none";
+        openLightScenarioModal();
+    }
+
+
+
+
+
+
+</script>
+<script>
+    // Функция для открытия модального окна создания сценария для умных розеток типа "power switch"
+    function openPowerSwitchScenarioModal() {
+        document.getElementById('createPowerSwitchScenarioModal').style.display = 'block';
+    }
+
+    // Получаем кнопку для открытия модального окна создания сценария для умных розеток типа "power switch"
+    var powerSwitchButton = document.getElementById("powerSwitchButton");
+
+    // Обработчик события для кнопки выбора умных розеток типа "power switch"
+    powerSwitchButton.onclick = function() {
+        chooseDeviceTypeModal.style.display = "none";
+        openPowerSwitchScenarioModal();
+
+        // Запрос на сервер для получения умных розеток типа "power switch"
+        fetch('/devices/power switch')
+            .then(response => response.json())
+            .then(data => {
+                // Отображаем устройства в виде чекбоксов
+                displayPowerSwitchDevices(data);
+            })
+            .catch(error => {
+                console.error('Ошибка при получении устройств:', error);
+                // Выводим сообщение об ошибке, если не удалось получить устройства
+                alert('Произошла ошибка при загрузке устройств');
+            });
+    };
+
+    // Функция для отображения устройств умных розеток типа "power switch"
+    function displayPowerSwitchDevices(devices) {
+        const container = document.getElementById('powerSwitchDevicesContainer');
+        container.innerHTML = '';
+
+        devices.forEach(device => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'selectedDevices';
+            checkbox.value = device.id;
+            checkbox.id = 'device_' + device.id;
+
+            const label = document.createElement('label');
+            label.htmlFor = 'device_' + device.id;
+            label.textContent = device.name;
+
+            // Добавляем скрытое поле для типа устройства с уникальным именем
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'deviceType_' + device.id; // Уникальное имя поля
+            typeInput.value = device.type;
+
+            // Добавляем скрытое поле для имени устройства с уникальным именем
+            const nameInput = document.createElement('input');
+            nameInput.type = 'hidden';
+            nameInput.name = 'deviceName_' + device.id; // Уникальное имя поля
+            nameInput.value = device.name;
+
+            container.appendChild(checkbox);
+            container.appendChild(label);
+            container.appendChild(typeInput); // Добавляем скрытое поле для типа устройства
+            container.appendChild(nameInput); // Добавляем скрытое поле для имени устройства
+            container.appendChild(document.createElement('br'));
+        });
+    }
+
+    // Обработчик отправки формы создания сценария управления умными розетками
+    document.getElementById('createPowerSwitchScenarioForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+        // Получаем выбранные устройства
+        const selectedDevices = Array.from(document.querySelectorAll('input[name="selectedDevices"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        // Отправляем запрос на сервер для каждого выбранного устройства
+        for (const deviceId of selectedDevices) {
+            try {
+                // Создаем новый экземпляр FormData для каждого устройства
+                const formDataCopy = new FormData(this);
+
+                // Выполняем запрос к серверу для получения данных о типе и имени устройства
+                const response = await fetch(`/devices/${deviceId}`);
+                const deviceData = await response.json();
+
+                // Очищаем предыдущие данные о типе и имени устройства
+                formDataCopy.delete('deviceType');
+                formDataCopy.delete('deviceName');
+
+                // Добавляем данные о типе и имени устройства к копии данных формы
+                formDataCopy.append('deviceType', deviceData.device_type);
+                formDataCopy.append('deviceName', deviceData.device_name);
+
+                // Очищаем поле selectedDevice
+                formDataCopy.delete('selectedDevice');
+
+                // Добавляем ID выбранного устройства к копии данных формы
+                formDataCopy.append('selectedDevice', deviceId);
+
+                // Отправляем запрос на сервер для обработки сценария и сохранения его
+                const scenarioResponse = await fetch('/power_switch_scenarios/add', {
+                    method: 'POST',
+                    body: formDataCopy
+                });
+
+                if (scenarioResponse.ok) {
+                    // Если запрос успешен, показываем сообщение об успешном сохранении
+                    alert('Сценарий успешно сохранен');
+                    // Очищаем форму
+                    this.reset();
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении сценария');
+            }
+        }
+    });
+    // Функция для открытия модального окна создания сценария для управления шторами
+    function openCurtainScenarioModal() {
+        document.getElementById('createCurtainScenarioModal').style.display = 'block';
+    }
+
+    // Получаем кнопку для открытия модального окна создания сценария для управления шторами
+    var curtainScenarioButton = document.getElementById("curtainScenarioButton");
+
+    // Обработчик события для кнопки выбора управления шторами
+    curtainScenarioButton.onclick = function() {
+        chooseDeviceTypeModal.style.display = "none";
+        openCurtainScenarioModal();
+
+        // Запрос на сервер для получения данных о шторах
+        fetch('/devices/curtains')
+            .then(response => response.json())
+            .then(data => {
+                // Отображаем устройства штор в виде чекбоксов
+                displayCurtainsDevices(data);
+            })
+            .catch(error => {
+                console.error('Ошибка при получении устройств:', error);
+                // Выводим сообщение об ошибке, если не удалось получить устройства
+                alert('Произошла ошибка при загрузке устройств');
+            });
+    };
+
+    // Функция для отображения устройств штор
+    function displayCurtainsDevices(devices) {
+        const container = document.getElementById('curtainDevicesContainer');
+        container.innerHTML = '';
+
+        devices.forEach(device => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.name = 'selectedDevices';
+            checkbox.value = device.id;
+            checkbox.id = 'device_' + device.id;
+
+            const label = document.createElement('label');
+            label.htmlFor = 'device_' + device.id;
+            label.textContent = device.name;
+
+            // Добавляем скрытое поле для типа устройства с уникальным именем
+            const typeInput = document.createElement('input');
+            typeInput.type = 'hidden';
+            typeInput.name = 'deviceType_' + device.id; // Уникальное имя поля
+            typeInput.value = device.type;
+
+            // Добавляем скрытое поле для имени устройства с уникальным именем
+            const nameInput = document.createElement('input');
+            nameInput.type = 'hidden';
+            nameInput.name = 'deviceName_' + device.id; // Уникальное имя поля
+            nameInput.value = device.name;
+
+            container.appendChild(checkbox);
+            container.appendChild(label);
+            container.appendChild(typeInput); // Добавляем скрытое поле для типа устройства
+            container.appendChild(nameInput); // Добавляем скрытое поле для имени устройства
+            container.appendChild(document.createElement('br'));
+        });
+    }
+
+    // Обработчик отправки формы создания сценария управления шторами
+    document.getElementById('createCurtainScenarioForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+        // Получаем выбранные устройства
+        const selectedDevices = Array.from(document.querySelectorAll('input[name="selectedDevices"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        // Отправляем запрос на сервер для каждого выбранного устройства
+        for (const deviceId of selectedDevices) {
+            try {
+                // Создаем новый экземпляр FormData для каждого устройства
+                const formDataCopy = new FormData(this);
+
+                // Выполняем запрос к серверу для получения данных о типе и имени устройства
+                const response = await fetch(`/devices/${deviceId}`);
+                const deviceData = await response.json();
+
+                // Очищаем предыдущие данные о типе и имени устройства
+                formDataCopy.delete('deviceType');
+                formDataCopy.delete('deviceName');
+
+                // Добавляем данные о типе и имени устройства к копии данных формы
+                formDataCopy.append('deviceType', deviceData.device_type);
+                formDataCopy.append('deviceName', deviceData.device_name);
+
+                // Очищаем поле selectedDevice
+                formDataCopy.delete('selectedDevice');
+
+                // Добавляем ID выбранного устройства к копии данных формы
+                formDataCopy.append('selectedDevice', deviceId);
+
+                // Отправляем запрос на сервер для обработки сценария и сохранения его
+                const scenarioResponse = await fetch('/curtain_scenarios/add', {
+                    method: 'POST',
+                    body: formDataCopy
+                });
+
+                if (scenarioResponse.ok) {
+                    // Если запрос успешен, показываем сообщение об успешном сохранении
+                    alert('Сценарий успешно сохранен');
+                    // Очищаем форму
+                    this.reset();
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении сценария');
+            }
+        }
+    });
+</script>
+<script>
+    // Обработчик отправки формы создания сценария управления светом
+    // Обработчик отправки формы создания сценария управления светом
+    document.getElementById('createLightScenarioForm').addEventListener('submit', async function(event) {
+        event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+        // Получаем выбранные устройства
+        const selectedDevices = Array.from(document.querySelectorAll('input[name="selectedDevices"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        // Отправляем запрос на сервер для каждого выбранного устройства
+        for (const deviceId of selectedDevices) {
+            try {
+                // Создаем новый экземпляр FormData для каждого устройства
+                const formDataCopy = new FormData(this);
+
+                // Выполняем запрос к серверу для получения данных о типе и имени устройства
+                const response = await fetch(`/devices/${deviceId}`);
+                const deviceData = await response.json();
+
+                // Очищаем предыдущие данные о типе и имени устройства
+                formDataCopy.delete('deviceType');
+                formDataCopy.delete('deviceName');
+
+                // Добавляем данные о типе и имени устройства к копии данных формы
+                formDataCopy.append('deviceType', deviceData.device_type);
+                formDataCopy.append('deviceName', deviceData.device_name);
+
+                // Очищаем поле selectedDevice
+                formDataCopy.delete('selectedDevice');
+
+                // Добавляем ID выбранного устройства к копии данных формы
+                formDataCopy.append('selectedDevice', deviceId);
+
+                // Отправляем запрос на сервер для обработки сценария и сохранения его
+                const scenarioResponse = await fetch('/light_scenarios/add', {
+                    method: 'POST',
+                    body: formDataCopy
+                });
+
+                if (scenarioResponse.ok) {
+                    // Если запрос успешен, показываем сообщение об успешном сохранении
+                    alert('Сценарий успешно сохранен');
+                    // Очищаем форму
+                    this.reset();
+                    // Перенаправляем пользователя на страницу /devices
+                    window.location.href = '/devices';
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении сценария');
+            }
+        }
+    });
+
+
+
+</script>
+</body>
+</html>
+

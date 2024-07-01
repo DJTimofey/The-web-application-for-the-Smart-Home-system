@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <title>Smart Home App - Call Service</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://top-fon.com/uploads/posts/2023-01/1675195674_top-fon-com-p-fon-dlya-prezentatsii-biznes-minimalizm-139.jpg') center center fixed;
+            background-size: cover;
+            margin: 0;
+            color: #fff;
+        }
+
+        .container {
+            padding: 50px;
+        }
+
+        h1 {
+            color: #007bff;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .card a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .card a:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+
+        .service-form {
+            margin-top: 20px;
+        }
+
+        .previous-requests {
+            margin-top: 40px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #007bff;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="display-4 mb-4">Запрос на обслуживание</h1>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <h2>Форма запроса на обслуживание</h2>
+                <p>Отправьте запрос на обслуживание администратору или оператору ЖЭС.</p>
+                <form th:action="@{/submit-service-request}" method="post" class="service-form">
+                    <div class="mb-3">
+                        <label for="requestDetails" class="form-label"> Подробная информация:</label>
+                        <textarea id="requestDetails" name="requestDetails" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="priority" class="form-label">Приоритет:</label>
+                        <select id="priority" name="priority" class="form-select">
+                            <option value="Low">Низкий</option>
+                            <option value="Medium">Средний</option>
+                            <option value="High">Высокий</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactInfo" class="form-label">Контактная информация:</label>
+                        <input type="text" id="contactInfo" name="contactInfo" class="form-control" placeholder="Введите свои контактные данные">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Получатель:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recipient" id="admin" value="ADMIN" checked>
+                            <label class="form-check-label" for="ADMIN">Администратор</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="recipient" id="operator" value="OPERATOR">
+                            <label class="form-check-label" for="OPERATOR">Оператор ЖЭС</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить запрос</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="previous-requests">
+        <h2>Предыдущие запросы на обслуживание</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Подробная информация</th>
+                <th>Получатель</th>
+                <th>Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="request : ${serviceRequests}">
+                <td th:text="${#temporals.format(request.dateRequested, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:text="${request.requestDetails}"></td>
+                <td th:text="${request.role}"></td> <!-- Предположим, что получатель доступен через request.role -->
+                <td th:text="${request.status}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <form th:action="@{/logout}" method="post">
+        <button class="logout-btn" type="submit">Выйти</button>
+    </form>
+</div>
+</body>
+</html>

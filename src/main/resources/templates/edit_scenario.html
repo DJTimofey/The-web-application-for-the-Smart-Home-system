@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Scenario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://top-fon.com/uploads/posts/2023-01/1675195674_top-fon-com-p-fon-dlya-prezentatsii-biznes-minimalizm-139.jpg') center center fixed;
+            background-size: cover;
+            margin: 0;
+            color: #c01919;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #007bff;
+            text-align: center;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Edit Scenario</h1>
+    <!-- Форма для редактирования параметров сценария -->
+    <form id="editScenarioForm">
+        <label for="scenarioName">Scenario Name:</label>
+        <input type="text" id="scenarioName" name="scenarioName" required><br>
+        <label for="scenarioDescription">Scenario Description:</label><br>
+        <textarea id="scenarioDescription" name="scenarioDescription" rows="4"></textarea><br>
+        <!-- Добавьте необходимые поля для редактирования параметров сценария -->
+        <input type="submit" value="Save">
+    </form>
+</div>
+
+<!-- Вставьте предложенный JavaScript-код здесь -->
+<script>
+    // Код JavaScript для редактирования сценария
+    document.getElementById('editScenarioForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Предотвращаем отправку формы по умолчанию
+
+        // Получаем значения из формы редактирования сценария
+        var scenarioName = document.getElementById('scenarioName').value;
+        var scenarioDescription = document.getElementById('scenarioDescription').value;
+        // Получите остальные параметры сценария, если необходимо
+
+        // Ваш код для обновления параметров сценария на сервере или локальном хранилище
+
+        // Добавьте здесь любую другую логику обработки формы, если необходимо
+    });
+</script>
+</body>
+</html>

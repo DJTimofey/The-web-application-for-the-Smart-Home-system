@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Список сценариев</title>
+    <!-- Подключение стилей Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Подключение стилей CSS -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://top-fon.com/uploads/posts/2023-01/1675195674_top-fon-com-p-fon-dlya-prezentatsii-biznes-minimalizm-139.jpg') center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            color: #fff4f4;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .scenario-list {
+            display: flex;
+            flex-direction: column-reverse; /* Изменяем порядок элементов на обратный */
+            gap: 20px;
+        }
+
+        .scenario-card {
+            width: 50%; /* Полную ширину для гибкости */
+            height: 300px; /* Увеличенная высота карточки */
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Тень */
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Вертикальное выравнивание по центру */
+            align-items: center; /* Горизонтальное выравнивание по центру */
+        }
+
+        .scenario-card h3 {
+            margin-bottom: 20px;
+            color: #007bff; /* Синий цвет текста заголовка */
+        }
+
+        .scenario-card p {
+            margin-bottom: 10px;
+            color: #333; /* Цвет текста */
+        }
+
+        .scenario-card button {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        .scenario-card button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(rgba(5,1,1,0.7), rgba(0, 0, 0, 0.7)), url('https://top-fon.com/uploads/posts/2023-01/1675195674_top-fon-com-p-fon-dlya-prezentatsii-biznes-minimalizm-139.jpg') center center fixed; background-size: cover;">
+<div class="container">
+    <a href="https://localhost:8443/devices/search?roomId=" class="btn btn-primary">Вернуться к умным устройствам</a>
+
+    <h1>Список сценариев</h1>
+    <!-- Ваш Thymeleaf шаблон для отображения сценариев -->
+    <div class="scenario-list">
+        <!-- Используем Thymeleaf для вывода карточек сценариев -->
+        <div class="scenario-card" th:each="scenario : ${scenarios}">
+            <h3 th:text="${scenario.scenarioName}">Название сценария</h3>
+            <p th:text="'Мин. температура: ' + ${scenario.minTemperature} + '°C'">Мин. температура: </p>
+            <p th:text="'Макс. температура: ' + ${scenario.maxTemperature} + '°C'">Макс. температура: </p>
+            <p th:text="'Мин. влажность: ' + ${scenario.minHumidity} + '% '">Мин. влажность: </p>
+            <p th:text="'Макс. влажность: ' + ${scenario.maxHumidity} + '% '">Макс. влажность: </p>
+            <p th:text="'Устройство: ' + ${scenario.deviceName}">Устройство: </p>
+
+            <!-- Кнопка для открытия модального окна редактирования -->
+            <button class="btn btn-primary edit-scenario-btn" data-scenario-id="${scenario.id}">Редактировать</button>
+            <form th:action="@{/devices/temp/{id}/delete(id=${scenario.id})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <button type="submit" class="btn btn-danger">Удалить</button>
+            </form>
+        </div>
+        <!-- Используем Thymeleaf для вывода карточек сценариев -->
+        <div class="scenario-list">
+            <div class="scenario-card" th:each="scenario : ${waterLeakScenarios}">
+                <h3 th:text="${scenario.scenarioName}">Название сценария</h3>
+                <p>Обнаружение протечки воды: <span th:text="${scenario.waterLeakDetection}"></span></p>
+                <p>Устройство: <span th:text="${scenario.deviceName}"></span></p>
+                <button class="btn btn-primary edit-water-leak-scenario-btn" data-scenario-id="${scenario.id}">Редактировать</button>                <!-- Форма для удаления сценария -->
+
+                <!-- Форма для удаления сценария -->
+                <form th:action="@{/devices/waterleakscenarios/{id}/delete(id=${scenario.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+        <!-- Используем Thymeleaf для вывода карточек сценариев включения и выключения света -->
+        <div class="scenario-list">
+            <div class="scenario-card" th:each="scenario : ${lightScenarios}">
+                <h3 th:text="${scenario.scenarioName}">Название сценария</h3>
+                <p th:text="'Состояние света: ' + ${scenario.lightSwitch}">Состояние света: </p>
+                <p th:text="'Время: ' + ${scenario.lightTime}">Время: </p>
+                <p th:text="'Яркость света: ' + ${scenario.lightBrightness}">Яркость света: </p>
+                <p th:text="'Устройство: ' + ${scenario.deviceName}">Устройство: </p>
+                <button type="button" class="btn btn-primary edit-light-scenario-btn" data-scenario-id="${scenario.id}">Редактировать</button>
+                <form th:action="@{/devices/lightscenarios/{id}/delete(id=${scenario.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+        <div class="scenario-list">
+            <!-- Используем Thymeleaf для вывода карточек сценариев штор -->
+            <div class="scenario-card" th:each="scenario : ${curtainScenarios}">
+                <h3 th:text="${scenario.scenarioName}">Название сценария</h3>
+                <p th:text="'Время открытия: ' + ${scenario.openTime}">Время открытия: </p>
+                <p th:text="'Время закрытия: ' + ${scenario.closeTime}">Время закрытия: </p>
+                <p th:text="'Устройство: ' + ${scenario.deviceName}">Устройство: </p>
+                <button class="btn btn-primary edit-curtain-scenario-btn" data-scenario-id="${scenario.id}">Редактировать</button>                <!-- Форма для удаления сценария -->
+                <form th:action="@{/devices/curtainscenarios/delete/{id}(id=${scenario.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+        <div class="scenario-list">
+            <!-- Используем Thymeleaf для вывода карточек сценариев для выключателей -->
+            <div class="scenario-card" th:each="scenario : ${powerSwitchScenarios}">
+                <h3 th:text="${scenario.scenarioName}">Название сценария</h3>
+                <p th:text="'Действие: ' + ${scenario.actionSwitch}">Действие: </p>
+                <p th:text="'Время переключения: ' + ${scenario.switchTime}">Время переключения: </p>
+                <p th:text="'Устройство: ' + ${scenario.deviceName}">Устройство: </p>
+                <!-- Кнопка для открытия модального окна редактирования -->
+                <button class="btn btn-primary edit-power-switch-scenario-btn" data-scenario-id="${scenario.id}">Редактировать</button>                <!-- Форма для удаления сценария -->
+                <!-- Форма для удаления сценария -->
+                <form th:action="@{/devices/power_switch_scenarios/{id}/delete(id=${scenario.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                    <button type="submit" class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Модальное окно редактирования сценария -->
+<!-- Модальное окно редактирования сценария -->
+<div id="editScenarioModal" class="modal">
+    <div class="modal-content" th:each="scenario : ${scenarios}">
+        <span class="close-modal-btn">&times;</span>
+        <h2>Редактирование сценария</h2>
+        <form th:action="@{/devices/temp/{id}/edit(id=${scenario.id})}" method="post">
+            <!-- Поле для названия сценария -->
+            <label for="scenarioName">Название сценария:</label>
+            <input type="text" id="scenarioName" name="scenarioName" th:value="${scenario.scenarioName}">
+
+            <!-- Поле для ввода минимальной температуры -->
+            <label for="minTemperature">Мин. температура (°C):</label>
+            <input type="number" id="minTemperature" name="minTemperature" th:value="${scenario.minTemperature}">
+
+            <!-- Поле для ввода максимальной температуры -->
+            <label for="maxTemperature">Макс. температура (°C):</label>
+            <input type="number" id="maxTemperature" name="maxTemperature" th:value="${scenario.maxTemperature}">
+
+            <!-- Поле для ввода минимальной влажности -->
+            <label for="minHumidity">Мин. влажность (%):</label>
+            <input type="number" id="minHumidity" name="minHumidity" th:value="${scenario.minHumidity}">
+
+            <!-- Поле для ввода максимальной влажности -->
+            <label for="maxHumidity">Макс. влажность (%):</label>
+            <input type="number" id="maxHumidity" name="maxHumidity" th:value="${scenario.maxHumidity}">
+
+            <!-- Скрытое поле для передачи ID сценария -->
+            <input type="hidden" id="scenarioId" name="id" th:value="${scenario.id}">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <!-- Кнопка "Сохранить изменения" -->
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+<!-- Модальное окно редактирования сценария для выключателя -->
+<div id="editPowerSwitchScenarioModal" class="modal">
+    <div class="modal-content" th:each="scenario : ${powerSwitchScenarios}">
+        <span class="close-modal-btn">&times;</span>
+        <h2>Редактирование сценария для розеток</h2>
+        <form th:action="@{/devices/power_switch_scenarios/{id}/edit(id=${scenario.id})}" method="post">            <!-- Поля для редактирования параметров сценария для выключателя -->
+            <label for="scenarioName">Название сценария:</label>
+            <input type="text" id="powerScenarioName" name="scenarioName" th:value="${scenario.scenarioName}">
+
+            <!-- Другие поля для редактирования параметров сценария для выключателя -->
+            <label for="actionSwitch">Действие:</label>
+            <select id="actionSwitch" name="actionSwitch">
+                <option value="On">Включить</option>
+                <option value="Off">Выключить</option>
+            </select>
+
+            <label for="switchTime">Время переключения:</label>
+            <input type="time" id="switchTime" name="switchTime" th:value="${scenario.switchTime}">
+
+
+            <!-- Скрытое поле для передачи ID сценария -->
+            <input type="hidden" id="powerSwitchScenarioId" name="id" th:value="${scenario.id}">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <!-- Кнопка "Сохранить изменения" -->
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+<!-- Модальное окно редактирования сценария для штор -->
+<div id="editCurtainScenarioModal" class="modal">
+    <div class="modal-content" th:each="scenario : ${curtainScenarios}">
+        <span class="close-modal-btn">&times;</span>
+        <h2>Редактирование сценария для штор</h2>
+        <form th:action="@{/devices/curtainscenarios/{id}/edit(id=${scenario.id})}" method="post">
+            <!-- Поля для редактирования параметров сценария для штор -->
+            <label for="curtainScenarioName">Название сценария:</label>
+            <input type="text" id="curtainScenarioName" name="scenarioName" th:value="${scenario.scenarioName}">
+
+            <label for="openTime">Время открытия:</label>
+            <input type="time" id="openTime" name="openTime" th:value="${scenario.openTime}">
+
+            <label for="closeTime">Время закрытия:</label>
+            <input type="time" id="closeTime" name="closeTime" th:value="${scenario.closeTime}">
+
+
+
+            <!-- Скрытое поле для передачи ID сценария -->
+            <input type="hidden" id="curtainScenarioId" name="id" th:value="${scenario.id}">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <!-- Кнопка "Сохранить изменения" -->
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+<!-- Модальное окно редактирования сценария включения и выключения света -->
+<div id="editLightScenarioModal" class="modal">
+    <div class="modal-content" th:each="scenario : ${lightScenarios}">
+        <span class="close-modal-btn">&times;</span>
+        <h2>Редактирование сценария включения и выключения света</h2>
+        <form th:action="@{/devices/lightscenarios/{id}/edit(id=${scenario.id})}" method="post">
+            <!-- Поля для редактирования параметров сценария -->
+            <label for="scenarioName">Название сценария:</label>
+            <input type="text" id="LightScenarioName" name="scenarioName" th:value="${scenario.scenarioName}">
+
+
+            <label for="lightSwitch">Действие:</label>
+            <select id="lightSwitch" name="lightSwitch">
+                <option value="On">Включить</option>
+                <option value="Off">Выключить</option>
+            </select>
+
+            <label for="lightTime">Время:</label>
+            <input type="time" id="lightTime" name="lightTime" th:value="${scenario.lightTime}">
+
+            <label for="lightBrightness">Яркость света:</label>
+            <input type="text" id="lightBrightness" name="lightBrightness" th:value="${scenario.lightBrightness}">
+
+
+            <!-- Скрытое поле для передачи ID сценария -->
+            <input type="hidden" id="lightScenarioId" name="id" th:value="${scenario.id}">
+
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <!-- Кнопка "Сохранить изменения" -->
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+<!-- Модальное окно редактирования сценария обнаружения протечки воды -->
+<div id="editWaterLeakScenarioModal" class="modal">
+    <div class="modal-content" th:each="scenario : ${waterLeakScenarios}">
+        <span class="close-modal-btn">&times;</span>
+        <h2>Редактирование сценария обнаружения протечки воды</h2>
+        <form  th:action="@{/devices/waterleakscenarios/{id}/edit(id=${scenario.id})}" method="post">
+            <!-- Поля для редактирования параметров сценария -->
+            <label for="scenarioName">Название сценария:</label>
+            <input type="text" id="WaterLeakScenarioName" name="scenarioName" th:value="${scenario.scenarioName}">
+
+
+            <label for="deviceName">Устройство:</label>
+            <input type="text" id="deviceName" name="deviceName" th:value="${scenario.deviceName}">
+
+            <!-- Скрытое поле для передачи ID сценария -->
+            <input type="hidden" id="waterLeakScenarioId" name="id" th:value="${scenario.id}">
+
+            <!-- CSRF токен -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <!-- Кнопка "Сохранить изменения" -->
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+<script>
+    // Получаем все кнопки "Редактировать" и модальное окно
+    var editScenarioButtons = document.querySelectorAll('.edit-scenario-btn');
+    var editScenarioModal = document.getElementById('editScenarioModal');
+
+    // Обработчик для кнопок "Редактировать"
+    editScenarioButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            // Получаем ID сценария из атрибута data
+            var scenarioId = button.getAttribute('data-scenario-id');
+
+            // Заполняем скрытое поле формы сценария
+            var scenarioIdField = document.getElementById('scenarioId');
+            scenarioIdField.value = scenarioId;
+
+            // Отображаем модальное окно
+            editScenarioModal.style.display = "block";
+        });
+    });
+
+    // Обработчик события для закрытия модального окна при клике на крестик
+    var closeModalButton = document.querySelector('.close-modal-btn');
+    closeModalButton.addEventListener('click', function() {
+        editScenarioModal.style.display = "none";
+    });
+
+    // Обработчик события для закрытия модального окна при клике вне его
+    window.addEventListener('click', function(event) {
+        if (event.target === editScenarioModal) {
+            editScenarioModal.style.display = "none";
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var editScenarioForm = document.getElementById('editScenarioForm');
+        editScenarioForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+
+            // Получаем ID сценария из скрытого поля формы
+            var scenarioId = document.getElementById('scenarioId').value;
+
+            // Создаем объект FormData для сбора данных формы
+            var formData = new FormData(editScenarioForm);
+
+            // Отправляем запрос на сервер с помощью AJAX
+            fetch(`/devices/temp/${scenarioId}/edit`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    // Проверяем статус ответа
+                    if (response.ok) {
+                        // Редирект на страницу devices/myscenarios после успешного редактирования
+                        window.location.href = '/devices/myscenarios';
+                    } else {
+                        console.error('Server error:', response.status);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    });
+    function setDefaultScenarioName(input) {
+        // Если поле ввода остается пустым, устанавливаем предыдущее значение
+        if (input.value.trim() === "") {
+            input.value = input.getAttribute('data-default-value');
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Устанавливаем значение по умолчанию для поля ввода при загрузке страницы
+        var scenarioNameInput = document.getElementById('scenarioName');
+        scenarioNameInput.setAttribute('data-default-value', scenarioNameInput.value);
+    });
+</script>
+<script>
+    // Получаем все кнопки "Редактировать" для сценариев выключателей и модальное окно
+    var editPowerSwitchScenarioButtons = document.querySelectorAll('.edit-power-switch-scenario-btn');
+    var editPowerSwitchScenarioModal = document.getElementById('editPowerSwitchScenarioModal');
+
+    // Обработчик для кнопок "Редактировать"
+    editPowerSwitchScenarioButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            // Получаем ID сценария из атрибута data
+            var scenarioId = button.getAttribute('data-scenario-id');
+
+            // Заполняем скрытое поле формы сценария
+            var scenarioIdField = document.getElementById('powerSwitchScenarioId');
+            scenarioIdField.value = scenarioId;
+
+            // Отображаем модальное окно
+            editPowerSwitchScenarioModal.style.display = "block";
+        });
+    });
+
+    // Обработчик события для закрытия модального окна при клике на крестик
+    var closePowerSwitchScenarioModalButton = document.querySelector('.close-modal-btn');
+    closePowerSwitchScenarioModalButton.addEventListener('click', function() {
+        editPowerSwitchScenarioModal.style.display = "none";
+    });
+
+    // Обработчик события для закрытия модального окна при клике вне его
+    window.addEventListener('click', function(event) {
+        if (event.target === editPowerSwitchScenarioModal) {
+            editPowerSwitchScenarioModal.style.display = "none";
+        }
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        var editPowerSwitchScenarioForm = document.getElementById('editPowerSwitchScenarioForm');
+        editPowerSwitchScenarioForm.addEventListener('submit', function(event) {
+            event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+
+            // Получаем ID сценария из скрытого поля формы
+            var powerSwitchScenarioId = document.getElementById('powerSwitchScenarioId').value;
+
+            // Создаем объект FormData для сбора данных формы
+            var formData = new FormData(editPowerSwitchScenarioForm);
+
+            // Отправляем запрос на сервер с помощью AJAX
+            fetch(`/devices/power_switch_scenarios/${powerSwitchScenarioId}/edit`, {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    // Проверяем статус ответа
+                    if (response.ok) {
+                        // Редирект на страницу devices/myscenarios после успешного редактирования
+                        window.location.href = '/devices/myscenarios';
+                    } else {
+                        console.error('Server error:', response.status);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+        document.addEventListener("DOMContentLoaded", function() {
+        // Устанавливаем значение по умолчанию для поля ввода названия сценария при загрузке страницы
+        var powerScenarioNameInput = document.getElementById('powerScenarioName');
+        powerScenarioNameInput.setAttribute('data-default-value', powerScenarioNameInput.value);
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        // Получаем элементы select и их значения по умолчанию
+        var actionSwitchSelect = document.getElementById('actionSwitch');
+        var defaultActionSwitchValue = actionSwitchSelect.value;
+
+        // Слушаем изменения в элементе select
+        actionSwitchSelect.addEventListener('change', function(event) {
+            // Если выбрано значение, обновляем defaultActionSwitchValue
+            if (actionSwitchSelect.value !== "") {
+                defaultActionSwitchValue = actionSwitchSelect.value;
+            }
+        });
+
+        // Перед отправкой формы проверяем, было ли выбрано значение в select
+        var editPowerSwitchScenarioForm = document.getElementById('editPowerSwitchScenarioForm');
+        editPowerSwitchScenarioForm.addEventListener('submit', function(event) {
+            // Если ничего не выбрано, возвращаем предыдущее значение
+            if (actionSwitchSelect.value === "") {
+                actionSwitchSelect.value = defaultActionSwitchValue;
+            }
+        });
+    });
+    // Получаем все кнопки "Редактировать" для сценариев штор и модальное окно
+    var editCurtainScenarioButtons = document.querySelectorAll('.edit-curtain-scenario-btn');
+    var editCurtainScenarioModal = document.getElementById('editCurtainScenarioModal');
+
+    // Обработчик для кнопок "Редактировать"
+    editCurtainScenarioButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            // Получаем ID сценария из атрибута data
+            var scenarioId = button.getAttribute('data-scenario-id');
+
+            // Заполняем скрытое поле формы сценария
+            var scenarioIdField = document.getElementById('curtainScenarioId');
+            scenarioIdField.value = scenarioId;
+
+            // Отображаем модальное окно
+            editCurtainScenarioModal.style.display = "block";
+        });
+    });
+
+    // Обработчик события для закрытия модального окна при клике на крестик
+    var closeCurtainScenarioModalButton = document.querySelector('.close-modal-btn');
+    closeCurtainScenarioModalButton.addEventListener('click', function() {
+        editCurtainScenarioModal.style.display = "none";
+    });
+
+    // Обработчик события для закрытия модального окна при клике вне его
+    window.addEventListener('click', function(event) {
+        if (event.target === editCurtainScenarioModal) {
+            editCurtainScenarioModal.style.display = "none";
+        }
+    });
+
+    // Отправка формы с помощью AJAX
+    var editCurtainScenarioForm = document.getElementById('editCurtainScenarioForm');
+    editCurtainScenarioForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+
+        // Получаем ID сценария из скрытого поля формы
+        var curtainScenarioId = document.getElementById('curtainScenarioId').value;
+
+        // Получаем значения времени открытия и закрытия штор
+        var openTime = document.getElementById('openTime').value;
+        var closeTime = document.getElementById('closeTime').value;
+
+        // Создаем объект FormData для сбора данных формы
+        var formData = new FormData(editCurtainScenarioForm);
+        // Добавляем значения времени открытия и закрытия штор в объект FormData
+        formData.append("openTime", openTime);
+        formData.append("closeTime", closeTime);
+
+        // Отправляем запрос на сервер с помощью AJAX
+        fetch(`/devices/curtainscenarios/${curtainScenarioId}/edit`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                // Проверяем статус ответа
+                if (response.ok) {
+                    // Редирект на страницу devices/myscenarios после успешного редактирования
+                    window.location.href = '/devices/myscenarios';
+                } else {
+                    console.error('Server error:', response.status);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+<script>
+    // Функция для открытия модального окна редактирования сценария включения и выключения света
+    function openEditLightScenarioModal(scenarioId) {
+        // Заполняем скрытое поле формы сценария
+        var scenarioIdField = document.getElementById('lightScenarioId');
+        scenarioIdField.value = scenarioId;
+
+        // Отображаем модальное окно
+        var editLightScenarioModal = document.getElementById('editLightScenarioModal');
+        editLightScenarioModal.style.display = "block";
+    }
+
+    // Функция для закрытия модального окна редактирования сценария включения и выключения света
+    function closeEditLightScenarioModal() {
+        var editLightScenarioModal = document.getElementById('editLightScenarioModal');
+        editLightScenarioModal.style.display = "none";
+    }
+
+
+    // Обработчик события для кнопок "Редактировать" сценария включения и выключения света
+    var editLightScenarioButtons = document.querySelectorAll('.edit-light-scenario-btn');
+    editLightScenarioButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var scenarioId = button.getAttribute('data-scenario-id');
+            openEditLightScenarioModal(scenarioId);
+        });
+    });
+
+
+    // Обработчик события для закрытия модального окна при клике на крестик
+    var closeModalButtons = document.querySelectorAll('.close-modal-btn');
+    closeModalButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var modalId = button.getAttribute('data-modal-id');
+            if (modalId === 'editLightScenarioModal') {
+                closeEditLightScenarioModal();
+            }
+
+        });
+    });
+
+    // Обработчик события для закрытия модального окна при клике вне его
+    window.addEventListener('click', function(event) {
+        var editLightScenarioModal = document.getElementById('editLightScenarioModal');
+        if (event.target === editLightScenarioModal) {
+            closeEditLightScenarioModal();
+        }
+
+    });
+
+    // Отправка формы с помощью AJAX для редактирования сценария включения и выключения света
+    var editLightScenarioForm = document.getElementById('editLightScenarioForm');
+    editLightScenarioForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+
+        var scenarioId = document.getElementById('lightScenarioId').value;
+        var formData = new FormData(editLightScenarioForm);
+
+        fetch(`/devices/lightscenarios/${scenarioId}/edit`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/devices/myscenarios';
+                } else {
+                    console.error('Server error:', response.status);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Получаем элемент select
+        var lightSwitchSelect = document.getElementById('lightSwitch');
+
+        // Устанавливаем значение по умолчанию
+        var defaultLightSwitchValue = lightSwitchSelect.value;
+
+        // Слушаем изменения в элементе select
+        lightSwitchSelect.addEventListener('change', function(event) {
+            // Если выбрано значение, обновляем defaultLightSwitchValue
+            if (lightSwitchSelect.value !== "") {
+                defaultLightSwitchValue = lightSwitchSelect.value;
+            }
+        });
+
+        // Перед отправкой формы проверяем, было ли выбрано значение в select
+        var editLightScenarioForm = document.getElementById('editLightScenarioForm');
+        editLightScenarioForm.addEventListener('submit', function(event) {
+            // Если ничего не выбрано, возвращаем предыдущее значение
+            if (lightSwitchSelect.value === "") {
+                lightSwitchSelect.value = defaultLightSwitchValue;
+            }
+        });
+    });
+
+
+
+</script>
+<script>
+    // Функция для открытия модального окна редактирования сценария обнаружения протечки воды
+    function openEditWaterLeakScenarioModal(scenarioId) {
+        // Заполняем скрытое поле формы сценария
+        var scenarioIdField = document.getElementById('waterLeakScenarioId');
+        scenarioIdField.value = scenarioId;
+
+        // Отображаем модальное окно
+        var editWaterLeakScenarioModal = document.getElementById('editWaterLeakScenarioModal');
+        editWaterLeakScenarioModal.style.display = "block";
+    }
+
+    // Функция для закрытия модального окна редактирования сценария обнаружения протечки воды
+    function closeEditWaterLeakScenarioModal() {
+        var editWaterLeakScenarioModal = document.getElementById('editWaterLeakScenarioModal');
+        editWaterLeakScenarioModal.style.display = "none";
+    }
+
+    // Обработчик события для кнопок "Редактировать" сценария обнаружения протечки воды
+    var editWaterLeakScenarioButtons = document.querySelectorAll('.edit-water-leak-scenario-btn');
+    editWaterLeakScenarioButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            var scenarioId = button.getAttribute('data-scenario-id');
+            openEditWaterLeakScenarioModal(scenarioId);
+        });
+    });
+
+
+
+    // Обработчик события для закрытия модального окна при клике вне его
+    window.addEventListener('click', function(event) {
+        var editWaterLeakScenarioModal = document.getElementById('editWaterLeakScenarioModal');
+        if (event.target === editWaterLeakScenarioModal) {
+            closeEditWaterLeakScenarioModal();
+        }
+    });
+
+    // Отправка формы с помощью AJAX для редактирования сценария обнаружения протечки воды
+    var editWaterLeakScenarioForm = document.getElementById('editWaterLeakScenarioForm');
+    editWaterLeakScenarioForm.addEventListener('submit', function(event) {
+        event.preventDefault(); // Предотвращаем стандартное поведение отправки формы
+
+        var scenarioId = document.getElementById('waterLeakScenarioId').value;
+        var formData = new FormData(editWaterLeakScenarioForm);
+
+        fetch(`/devices/waterleakscenarios/${scenarioId}/edit`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/devices/myscenarios';
+                } else {
+                    console.error('Server error:', response.status);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+</script>
+</body>
+</html>
